@@ -113,15 +113,36 @@ func (c *Client) Patch(url string) (client *Client) {
 	return c
 }
 
+func JsonUnEscapeHtml(v interface{}) ([]byte, error) {
+
+	// json.Marshal 默认 escapeHtml 为true,会转义 <、>、&
+	bf := bytes.NewBuffer([]byte{})
+	jsonEncoder := json.NewEncoder(bf)
+	jsonEncoder.SetEscapeHTML(false)
+	err := jsonEncoder.Encode(v)
+	if err != nil {
+		return nil, err
+	}
+
+	return bf.Bytes(), nil
+}
+
 func (c *Client) SendStruct(v interface{}) (client *Client) {
 	if v == nil {
 		return c
 	}
-	bs, err := json.Marshal(v)
+	// bs, err := json.Marshal(v)
+	// if err != nil {
+	// 	c.err = fmt.Errorf("json.Marshal(%+v)：%w", v, err)
+	// 	return c
+	// }
+
+	bs, err := JsonUnEscapeHtml(v)
 	if err != nil {
 		c.err = fmt.Errorf("json.Marshal(%+v)：%w", v, err)
 		return c
 	}
+
 	switch c.requestType {
 	case TypeJSON:
 		c.jsonByte = bs
@@ -142,7 +163,12 @@ func (c *Client) SendBodyMap(bm map[string]interface{}) (client *Client) {
 	}
 	switch c.requestType {
 	case TypeJSON:
-		bs, err := json.Marshal(bm)
+		// bs, err := json.Marshal(bm)
+		// if err != nil {
+		// 	c.err = fmt.Errorf("json.Marshal(%+v)：%w", bm, err)
+		// 	return c
+		// }
+		bs, err := JsonUnEscapeHtml(bm)
 		if err != nil {
 			c.err = fmt.Errorf("json.Marshal(%+v)：%w", bm, err)
 			return c
@@ -160,11 +186,17 @@ func (c *Client) SendMultipartBodyMap(bm map[string]interface{}) (client *Client
 	}
 	switch c.requestType {
 	case TypeJSON:
-		bs, err := json.Marshal(bm)
+		// bs, err := json.Marshal(bm)
+		// if err != nil {
+		// 	c.err = fmt.Errorf("json.Marshal(%+v)：%w", bm, err)
+		// 	return c
+		// }
+		bs, err := JsonUnEscapeHtml(bm)
 		if err != nil {
 			c.err = fmt.Errorf("json.Marshal(%+v)：%w", bm, err)
 			return c
 		}
+
 		c.jsonByte = bs
 	case TypeXML, TypeUrlencoded, TypeForm, TypeFormData:
 		c.FormString = FormatURLParam(bm)
@@ -240,7 +272,7 @@ func (c *Client) EndBytes(ctx context.Context) (res *http.Response, bs []byte, e
 				c.ContentType = types[TypeXML]
 				c.unmarshalType = string(TypeXML)
 			default:
-				return errors.New("Request type Error ")
+				return errors.New(" Request type Error ")
 			}
 		case POST, PUT, DELETE, PATCH:
 			switch c.requestType {
@@ -278,10 +310,10 @@ func (c *Client) EndBytes(ctx context.Context) (res *http.Response, bs []byte, e
 				c.ContentType = types[TypeXML]
 				c.unmarshalType = string(TypeXML)
 			default:
-				return errors.New("Request type Error ")
+				return errors.New(" Request type Error ")
 			}
 		default:
-			return errors.New("Only support GET and POST and PUT and DELETE ")
+			return errors.New(" Only support GET and POST and PUT and DELETE ")
 		}
 
 		req, err := http.NewRequestWithContext(ctx, c.method, c.url, body)

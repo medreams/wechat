@@ -48,6 +48,10 @@ func (sdk *SDK) GetSubscribeTemplateList(ctx context.Context, appid string) (tem
 // SendSubscribeMessage 发送模版信息
 func (sdk *SDK) SendSubscribeMessage(ctx context.Context, param *WxSendTemplateMessageParam) error {
 
+	if param.TemplateID == "" {
+		return fmt.Errorf("template_id is empty")
+	}
+
 	bodyMap := make(map[string]interface{})
 
 	bodyMap["access_token"] = sdk.AccessToken
