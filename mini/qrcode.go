@@ -50,7 +50,6 @@ func (sdk *SDK) CreateMiniSceneCode(ctx context.Context, param *WxMiniSceneParam
 	}
 
 	bodyMap := make(map[string]interface{})
-	bodyMap["access_token"] = sdk.AccessToken
 	bodyMap["scene"] = param.Scene //最大32个可见字符，只支持数字
 	bodyMap["width"] = param.Width
 	bodyMap["page"] = param.Page            //必须是已经发布的小程序存在的页面
@@ -72,7 +71,6 @@ func (sdk *SDK) CreateMiniSceneCode(ctx context.Context, param *WxMiniSceneParam
 func (sdk *SDK) CreateMiniDefaultCode(ctx context.Context, param *WxMiniPathParam) (ret []byte, err error) {
 
 	bodyMap := make(map[string]interface{})
-	bodyMap["access_token"] = sdk.AccessToken
 	bodyMap["path"] = param.Path
 	bodyMap["width"] = param.Width
 

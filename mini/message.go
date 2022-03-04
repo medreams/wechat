@@ -52,7 +52,6 @@ func (sdk *SDK) SendSubscribeMessage(ctx context.Context, param *WxSendTemplateM
 	}
 
 	bodyMap := make(map[string]interface{})
-	bodyMap["access_token"] = sdk.AccessToken
 	bodyMap["touser"] = param.Touser
 	bodyMap["template_id"] = param.TemplateID
 	bodyMap["page"] = param.Page

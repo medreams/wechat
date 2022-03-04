@@ -16,7 +16,6 @@ type WxShortLink struct {
 func (sdk *SDK) GetWxShortLink(ctx context.Context, pageUrl, title string, isPeermanent bool) (link *WxShortLink, err error) {
 
 	bodyMap := make(map[string]interface{})
-	bodyMap["access_token"] = sdk.AccessToken
 	bodyMap["page_url"] = pageUrl
 	bodyMap["page_title"] = title
 	bodyMap["is_permanent"] = isPeermanent

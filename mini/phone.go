@@ -22,7 +22,6 @@ type WxUserPhone struct {
 func (sdk *SDK) MiniCodeGetPhone(ctx context.Context, phoneCode string) (phone *WxUserPhone, err error) {
 
 	bodyMap := make(map[string]interface{})
-	bodyMap["access_token"] = sdk.AccessToken
 	bodyMap["code"] = phoneCode
 
 	phone = &WxUserPhone{}

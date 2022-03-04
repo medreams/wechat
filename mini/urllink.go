@@ -41,7 +41,6 @@ type WxMiniUrlLinkQuery struct {
 func (sdk *SDK) GenerateUrlLink(ctx context.Context, path, query, envVersion string, expire *WxMiniExpireParam, cb *WxMiniCloudBase) (scheme *WxMiniLink, err error) {
 
 	bodyMap := make(map[string]interface{})
-	bodyMap["access_token"] = sdk.AccessToken
 	bodyMap["path"] = path
 	bodyMap["query"] = query
 	bodyMap["env_version"] = envVersion
@@ -79,7 +78,6 @@ func (sdk *SDK) GenerateUrlLink(ctx context.Context, path, query, envVersion str
 func (sdk *SDK) QueryUrlLink(ctx context.Context, urlLink string) (query *WxMiniUrlLinkQuery, err error) {
 
 	bodyMap := make(map[string]interface{})
-	bodyMap["access_token"] = sdk.AccessToken
 	bodyMap["url_link"] = urlLink
 
 	req := &WxMiniUrlLinkQuery{}

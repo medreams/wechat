@@ -38,7 +38,6 @@ type WxMiniSchemeInfo struct {
 func (sdk *SDK) GenerateScheme(ctx context.Context, expire *WxMiniExpireParam, jw *WxMiniJumpWxa) (scheme *WxMiniScheme, err error) {
 
 	bodyMap := make(map[string]interface{})
-	bodyMap["access_token"] = sdk.AccessToken
 	if expire != nil {
 		bodyMap["is_expire"] = expire.IsExpire     //生成的 scheme 码类型，到期失效：true，永久有效：false。注意，永久有效 scheme 和有效时间超过180天的到期失效 scheme 的总数上限为10万个
 		bodyMap["expire_type"] = expire.ExpireType //失效时间：0，失效间隔天数：1
@@ -68,7 +67,6 @@ func (sdk *SDK) GenerateScheme(ctx context.Context, expire *WxMiniExpireParam, j
 func (sdk *SDK) QueryScheme(ctx context.Context, scheme string) (query *WxMiniSchemeQuery, err error) {
 
 	bodyMap := make(map[string]interface{})
-	bodyMap["access_token"] = sdk.AccessToken
 	bodyMap["scheme"] = scheme
 
 	req := &WxMiniSchemeQuery{}
