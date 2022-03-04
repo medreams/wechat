@@ -35,23 +35,25 @@ type WxMiniSchemeInfo struct {
 	EnvVersion string `json:"env_version,omitempty"`
 }
 
-type WxMiniQuota struct {
-	LongTimeUsed  int `json:"long_time_used,omitempty"`
-	LongTimeLimit int `json:"long_time_limit,omitempty"`
-}
-
-func (sdk *SDK) GenerateScheme(ctx context.Context, expireType int, expireInterval int, jw *WxMiniJumpWxa) (scheme *WxMiniScheme, err error) {
-
-	isExpire := true //生成的 scheme 码类型，到期失效：true，永久有效：false。注意，永久有效 scheme 和有效时间超过180天的到期失效 scheme 的总数上限为10万个
-	// expireType = 1   //，失效时间：0，失效间隔天数：1
-
-	// expireInterval = 30 //到期失效的 scheme 码的失效间隔天数。生成的到期失效 scheme 码在该间隔时间到达前有效。最长间隔天数为365天。is_expire 为 true 且 expire_type 为 1 时必填
+func (sdk *SDK) GenerateScheme(ctx context.Context, expire *WxMiniExpireParam, jw *WxMiniJumpWxa) (scheme *WxMiniScheme, err error) {
 
 	bodyMap := make(map[string]interface{})
 	bodyMap["access_token"] = sdk.AccessToken
-	bodyMap["is_expire"] = isExpire
-	bodyMap["expire_type"] = expireType
-	bodyMap["expire_interval"] = expireInterval
+	if expire != nil {
+		bodyMap["is_expire"] = expire.IsExpire     //生成的 scheme 码类型，到期失效：true，永久有效：false。注意，永久有效 scheme 和有效时间超过180天的到期失效 scheme 的总数上限为10万个
+		bodyMap["expire_type"] = expire.ExpireType //失效时间：0，失效间隔天数：1
+
+		switch expire.ExpireType {
+		case 0:
+			bodyMap["expire_time"] = expire.ExpireTime
+		case 1:
+			bodyMap["expire_interval"] = expire.ExpireInterval //到期失效的 scheme 码的失效间隔天数。生成的到期失效 scheme 码在该间隔时间到达前有效。最长间隔天数为365天。is_expire 为 true 且 expire_type 为 1 时必填
+		}
+	} else {
+		bodyMap["is_expire"] = true
+		bodyMap["expire_type"] = 1
+		bodyMap["expire_interval"] = 30
+	}
 
 	req := &WxMiniScheme{}
 	uri := fmt.Sprintf("https://api.weixin.qq.com/wxa/generatescheme?access_token=%s", sdk.AccessToken)

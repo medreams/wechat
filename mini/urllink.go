@@ -38,16 +38,30 @@ type WxMiniUrlLinkQuery struct {
 	UrlLinkQuota WxMiniQuota       `json:"url_link_quota,omitempty"`
 }
 
-func (sdk *SDK) GenerateUrlLink(ctx context.Context, path, query, envVersion string, expireType, expireInterval int, cb *WxMiniCloudBase) (scheme *WxMiniLink, err error) {
+func (sdk *SDK) GenerateUrlLink(ctx context.Context, path, query, envVersion string, expire *WxMiniExpireParam, cb *WxMiniCloudBase) (scheme *WxMiniLink, err error) {
 
 	bodyMap := make(map[string]interface{})
 	bodyMap["access_token"] = sdk.AccessToken
 	bodyMap["path"] = path
 	bodyMap["query"] = query
 	bodyMap["env_version"] = envVersion
-	bodyMap["is_expire"] = true                 //到期失效：true，永久有效：false。注意，永久有效 Link 和有效时间超过180天的到期失效 Link 的总数上限为10万个，详见获取 URL Link，生成 Link 前请仔细确认。
-	bodyMap["expire_type"] = expireType         //小程序 URL Link 失效类型，失效时间：0，失效间隔天数：1
-	bodyMap["expire_interval"] = expireInterval //到期失效的URL Link的失效间隔天数。生成的到期失效URL Link在该间隔时间到达前有效。最长间隔天数为365天。expire_type 为 1 必填
+
+	if expire != nil {
+		bodyMap["is_expire"] = expire.IsExpire     //到期失效：true，永久有效：false。注意，永久有效 Link 和有效时间超过180天的到期失效 Link 的总数上限为10万个，详见获取 URL Link，生成 Link 前请仔细确认。
+		bodyMap["expire_type"] = expire.ExpireType //小程序 URL Link 失效类型，失效时间：0，失效间隔天数：1
+		switch expire.ExpireType {
+		case 0:
+			bodyMap["expire_time"] = expire.ExpireTime //到期失效的URL Link的失效时间，UNIX 时间戳，单位：秒。expire_type 为 0 必填
+		case 1:
+			bodyMap["expire_interval"] = expire.ExpireInterval //到期失效的URL Link的失效间隔天数。生成的到期失效URL Link在该间隔时间到达前有效。最长间隔天数为365天。expire_type 为 1 必填
+		}
+
+	} else {
+		bodyMap["is_expire"] = true
+		bodyMap["expire_type"] = 1
+		bodyMap["expire_interval"] = 30
+	}
+
 	if cb != nil {
 		bodyMap["cloud_base"] = *cb
 	}
