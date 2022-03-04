@@ -78,12 +78,6 @@ func DoRequestPostGetByte(c context.Context, uri string, body map[string]interfa
 		return nil, err
 	}
 
-	msg := &WxCommonResponse{}
-	json.Unmarshal(bs, msg)
-	if msg.ErrCode != 0 {
-		return nil, fmt.Errorf("ErrCode(%d) != 0", msg.ErrCode)
-	}
-
 	return bs, nil
 }
 
@@ -92,7 +86,7 @@ func CheckRequestError(bs []byte) error {
 	msg := &WxCommonResponse{}
 	json.Unmarshal(bs, msg)
 	if msg.ErrCode != 0 {
-		return fmt.Errorf("ErrCode(%d) != 0", msg.ErrCode)
+		return fmt.Errorf("ErrCode(%d),ErrMsg(%s)", msg.ErrCode, msg.ErrMsg)
 	}
 
 	return nil
