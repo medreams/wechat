@@ -17,9 +17,9 @@ type WxCode2Session struct {
 
 func (s *SDK) Code2Session(c context.Context, code string) (session *WxCode2Session, err error) {
 
-	uri := "https://api.weixin.qq.com/sns/jscode2session?appid=" + s.Appid + "&secret=" + s.Secret + "&js_code=" + code + "&grant_type=authorization_code"
-
 	session = &WxCode2Session{}
+	uri := fmt.Sprintf("https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code", s.Appid, s.Secret, code)
+
 	if err = common.DoRequestGet(c, uri, session); err != nil {
 		return nil, fmt.Errorf("do request get session: %w", err)
 	}

@@ -16,9 +16,8 @@ type WxAccessToken struct {
 
 func GetAccessToken(ctx context.Context, appid, appSecret string) (at *WxAccessToken, err error) {
 
-	URL := "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + appid + "&secret=" + appSecret
-
 	at = &WxAccessToken{}
+	URL := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s", appid, appSecret)
 
 	if err = DoRequestGet(ctx, URL, at); err != nil {
 		return nil, fmt.Errorf("do request get access_token: %w", err)

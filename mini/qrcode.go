@@ -50,6 +50,7 @@ func (sdk *SDK) CreateMiniSceneCode(ctx context.Context, param *WxMiniSceneParam
 	}
 
 	bodyMap := make(map[string]interface{})
+	bodyMap["access_token"] = sdk.AccessToken
 	bodyMap["scene"] = param.Scene //最大32个可见字符，只支持数字
 	bodyMap["width"] = param.Width
 	bodyMap["page"] = param.Page            //必须是已经发布的小程序存在的页面
@@ -57,9 +58,9 @@ func (sdk *SDK) CreateMiniSceneCode(ctx context.Context, param *WxMiniSceneParam
 	bodyMap["is_hyaline"] = param.IsHyaline //是否需要透明底色
 	bodyMap["line_color"] = lineColorMap
 
-	URL := fmt.Sprintf("https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=%s", sdk.AccessToken)
+	uri := fmt.Sprintf("https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=%s", sdk.AccessToken)
 
-	bs, err := common.DoRequestPostGetByte(ctx, URL, bodyMap)
+	bs, err := common.DoRequestPostGetByte(ctx, uri, bodyMap)
 	if err != nil {
 		return nil, err
 	}
@@ -71,11 +72,13 @@ func (sdk *SDK) CreateMiniSceneCode(ctx context.Context, param *WxMiniSceneParam
 func (sdk *SDK) CreateMiniDefaultCode(ctx context.Context, param *WxMiniPathParam) (ret []byte, err error) {
 
 	bodyMap := make(map[string]interface{})
+	bodyMap["access_token"] = sdk.AccessToken
 	bodyMap["path"] = param.Path
 	bodyMap["width"] = param.Width
 
-	apiurl := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/wxaapp/createwxaqrcode?access_token=%s", sdk.AccessToken)
-	retByte, err := common.DoRequestPostGetByte(ctx, apiurl, bodyMap)
+	uri := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/wxaapp/createwxaqrcode?access_token=%s", sdk.AccessToken)
+
+	retByte, err := common.DoRequestPostGetByte(ctx, uri, bodyMap)
 	if err != nil {
 		return nil, err
 	}

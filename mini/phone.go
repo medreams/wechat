@@ -20,12 +20,14 @@ type WxUserPhone struct {
 }
 
 func (sdk *SDK) MiniCodeGetPhone(ctx context.Context, phoneCode string) (phone *WxUserPhone, err error) {
-	uri := "https://api.weixin.qq.com/wxa/genwxashortlink?access_token=" + sdk.AccessToken
 
 	bodyMap := make(map[string]interface{})
+	bodyMap["access_token"] = sdk.AccessToken
 	bodyMap["code"] = phoneCode
 
 	phone = &WxUserPhone{}
+	uri := fmt.Sprintf("https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=%s", sdk.AccessToken)
+
 	if err = common.DoRequestPost(ctx, uri, bodyMap, phone); err != nil {
 		return nil, fmt.Errorf("do request get phone: %w", err)
 	}

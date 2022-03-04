@@ -15,9 +15,9 @@ type PaidUnionId struct {
 
 func (s *SDK) GetPaidUnionId(c context.Context, openid string) (unionId string, err error) {
 
+	PaidUnionId := &PaidUnionId{}
 	uri := "https://api.weixin.qq.com/wxa/getpaidunionid?access_token=ACCESS_TOKEN&openid=OPENID"
 
-	PaidUnionId := &PaidUnionId{}
 	if err = common.DoRequestGet(c, uri, PaidUnionId); err != nil {
 		return "", fmt.Errorf("do request get unionId: %w", err)
 	}

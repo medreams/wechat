@@ -34,9 +34,9 @@ type PublicUserInfo struct {
 //文档地址 https://developers.weixin.qq.com/doc/offiaccount/User_Management/Get_users_basic_information_UnionID.html#UinonId
 func (s *SDK) Openid2UserInfo(ctx context.Context, openid string) (user *PublicUserInfo, err error) {
 
+	user = &PublicUserInfo{}
 	url := "https://api.weixin.qq.com/cgi-bin/user/info?access_token=" + s.AccessToken + "&openid=" + openid + "&lang=zh_CN"
 
-	user = &PublicUserInfo{}
 	if err = common.DoRequestGet(ctx, url, user); err != nil {
 		return nil, fmt.Errorf("do request get userinfo: %w", err)
 	}

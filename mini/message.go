@@ -36,9 +36,8 @@ type WxSendTemplateMessageParam struct {
 func (sdk *SDK) GetSubscribeTemplateList(ctx context.Context, appid string) (template *WxGetTemplateRes, err error) {
 	template = &WxGetTemplateRes{}
 
-	apiurl := fmt.Sprintf("https://api.weixin.qq.com/wxaapi/newtmpl/gettemplate?access_token=%s", sdk.AccessToken)
-
-	if err = common.DoRequestGet(ctx, apiurl, template); err != nil {
+	uri := fmt.Sprintf("https://api.weixin.qq.com/wxaapi/newtmpl/gettemplate?access_token=%s", sdk.AccessToken)
+	if err = common.DoRequestGet(ctx, uri, template); err != nil {
 		return nil, fmt.Errorf("do request: %w", err)
 	}
 
@@ -53,7 +52,6 @@ func (sdk *SDK) SendSubscribeMessage(ctx context.Context, param *WxSendTemplateM
 	}
 
 	bodyMap := make(map[string]interface{})
-
 	bodyMap["access_token"] = sdk.AccessToken
 	bodyMap["touser"] = param.Touser
 	bodyMap["template_id"] = param.TemplateID
@@ -62,10 +60,10 @@ func (sdk *SDK) SendSubscribeMessage(ctx context.Context, param *WxSendTemplateM
 	bodyMap["miniprogram_state"] = param.MiniprogramState
 	bodyMap["lang"] = param.Lang
 
-	apiurl := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=%s", sdk.AccessToken)
-
 	req := &common.WxCommonResponse{}
-	if err := common.DoRequestPost(ctx, apiurl, bodyMap, req); err != nil {
+	uri := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=%s", sdk.AccessToken)
+
+	if err := common.DoRequestPost(ctx, uri, bodyMap, req); err != nil {
 		return fmt.Errorf("do request: %w", err)
 	}
 
