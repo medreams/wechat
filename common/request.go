@@ -28,6 +28,10 @@ func DoRequestGet(c context.Context, uri string, ptr interface{}) (err error) {
 		return fmt.Errorf("StatusCode(%d) != 200", res.StatusCode)
 	}
 
+	if err := CheckRequestError(bs); err != nil {
+		return err
+	}
+
 	if err = json.Unmarshal(bs, ptr); err != nil {
 		return fmt.Errorf("json.Unmarshal(%s, %+v)：%w", string(bs), ptr, err)
 	}
@@ -45,6 +49,10 @@ func DoRequestPost(c context.Context, uri string, body map[string]interface{}, p
 
 	if res.StatusCode != 200 {
 		return fmt.Errorf("StatusCode(%d) != 200", res.StatusCode)
+	}
+
+	if err := CheckRequestError(bs); err != nil {
+		return err
 	}
 
 	if err = json.Unmarshal(bs, ptr); err != nil {
@@ -66,6 +74,10 @@ func DoRequestPostGetByte(c context.Context, uri string, body map[string]interfa
 		return nil, fmt.Errorf("StatusCode(%d) != 200", res.StatusCode)
 	}
 
+	if err := CheckRequestError(bs); err != nil {
+		return nil, err
+	}
+
 	msg := &WxCommonResponse{}
 	json.Unmarshal(bs, msg)
 	if msg.ErrCode != 0 {
@@ -73,4 +85,15 @@ func DoRequestPostGetByte(c context.Context, uri string, body map[string]interfa
 	}
 
 	return bs, nil
+}
+
+func CheckRequestError(bs []byte) error {
+
+	msg := &WxCommonResponse{}
+	json.Unmarshal(bs, msg)
+	if msg.ErrCode != 0 {
+		return fmt.Errorf("ErrCode(%d) != 0", msg.ErrCode)
+	}
+
+	return nil
 }
