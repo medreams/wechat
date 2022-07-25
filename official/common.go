@@ -13,3 +13,8 @@ func New(appid, secret, token string) *SDK {
 		AccessToken: token,
 	}
 }
+
+func (sdk *SDK) UpdateAccessToken(accessToken string) error {
+	sdk.AccessToken = accessToken
+	return nil
+}
