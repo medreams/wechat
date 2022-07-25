@@ -21,7 +21,7 @@ type WxCode2AccessToekn struct {
 
 func (s *SDK) Code2AccessToken(ctx context.Context, code string) (at *WxCode2AccessToekn, err error) {
 	at = &WxCode2AccessToekn{}
-	URL := fmt.Sprintf("https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=SECRET&code=%s&grant_type=authorization_code", s.Appid, code)
+	URL := fmt.Sprintf("https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code", s.Appid, s.Secret, code)
 
 	if err = common.DoRequestGet(ctx, URL, at); err != nil {
 		return nil, fmt.Errorf("do request get access_token: %w", err)
