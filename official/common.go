@@ -1,9 +1,10 @@
 package official
 
 type SDK struct {
-	Appid       string
-	Secret      string
-	AccessToken string
+	Appid          string
+	Secret         string
+	AccessToken    string
+	WebAccessToekn string
 }
 
 func New(appid, secret, token string) *SDK {
@@ -14,7 +15,7 @@ func New(appid, secret, token string) *SDK {
 	}
 }
 
-func (sdk *SDK) UpdateAccessToken(accessToken string) error {
-	sdk.AccessToken = accessToken
+func (sdk *SDK) UpdateWebAccessToken(webAccessToken string) error {
+	sdk.WebAccessToekn = webAccessToken
 	return nil
 }

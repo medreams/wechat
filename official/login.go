@@ -8,7 +8,7 @@ import (
 	"github.com/medreams/wechat/common"
 )
 
-type WxCode2AccessToekn struct {
+type WxWebAccessToekn struct {
 	Openid       string `json:"openid,omitempty"`        // 用户唯一标识
 	AccessToken  string `json:"access_token,omitempty"`  // 会话密钥
 	ExpiresIn    int    `json:"expires_in,omitempty"`    // 凭证有效时间，单位：秒。目前是7200秒之内的值。
@@ -19,8 +19,9 @@ type WxCode2AccessToekn struct {
 	Errmsg       string `json:"errmsg,omitempty"`        // 错误信息
 }
 
-func (s *SDK) Code2AccessToken(ctx context.Context, code string) (at *WxCode2AccessToekn, err error) {
-	at = &WxCode2AccessToekn{}
+//公众帐号code 获取 access_token(此access_token,只能在网页授权中使用)
+func (s *SDK) Code2WebAccessToken(ctx context.Context, code string) (at *WxWebAccessToekn, err error) {
+	at = &WxWebAccessToekn{}
 	URL := fmt.Sprintf("https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code", s.Appid, s.Secret, code)
 
 	if err = common.DoRequestGet(ctx, URL, at); err != nil {
@@ -32,7 +33,20 @@ func (s *SDK) Code2AccessToken(ctx context.Context, code string) (at *WxCode2Acc
 	}
 
 	at.ExpiresTime = time.Now().Unix() + int64(at.ExpiresIn)
-	s.UpdateAccessToken(at.AccessToken)
+	//s.UpdateAccessToken(at.AccessToken)
 
 	return at, nil
+}
+
+//公众号网页授权获取的access_token拉取用户信息
+func (s *SDK) WebAccessTokenAndOpenid2UserInfo(ctx context.Context, webAccessToken string, openid string) (userinfo *PublicUserInfo, err error) {
+	userinfo = &PublicUserInfo{}
+
+	URL := fmt.Sprintf("https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN", webAccessToken, openid)
+
+	if err = common.DoRequestGet(ctx, URL, userinfo); err != nil {
+		return nil, fmt.Errorf("do request get mp userinfo: %w", err)
+	}
+
+	return userinfo, nil
 }
