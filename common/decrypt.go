@@ -38,7 +38,7 @@ func DecryptOpenDataToStruct(encryptedData, iv, sessionKey string, beanPtr inter
 	cipherText, _ = base64.StdEncoding.DecodeString(encryptedData)
 	aesKey, _ = base64.StdEncoding.DecodeString(sessionKey)
 	ivKey, _ = base64.StdEncoding.DecodeString(iv)
-	fmt.Println("ivKey:", string(ivKey))
+	// fmt.Println("ivKey:", string(ivKey))
 	if len(cipherText)%len(aesKey) != 0 {
 		return errors.New("encryptedData is error")
 	}
