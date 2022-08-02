@@ -39,8 +39,8 @@ func (s *SDK) Code2WebAccessToken(ctx context.Context, code string) (at *WxWebAc
 }
 
 //公众号网页授权获取的access_token拉取用户信息
-func (s *SDK) WebAccessTokenAndOpenid2UserInfo(ctx context.Context, webAccessToken string, openid string) (userinfo *PublicUserInfo, err error) {
-	userinfo = &PublicUserInfo{}
+func (s *SDK) WebAccessTokenAndOpenid2UserInfo(ctx context.Context, webAccessToken string, openid string) (userinfo *UserInfo, err error) {
+	userinfo = &UserInfo{}
 
 	URL := fmt.Sprintf("https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN", webAccessToken, openid)
 

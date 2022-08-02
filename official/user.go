@@ -8,7 +8,7 @@ import (
 )
 
 // 微信公众号用户信息
-type PublicUserInfo struct {
+type UserInfo struct {
 	Subscribe      int    `json:"subscribe,omitempty"`       // 用户是否订阅该公众号标识，值为0时，代表此用户没有关注该公众号，拉取不到其余信息。
 	Openid         string `json:"openid,omitempty"`          // 用户唯一标识
 	Nickname       string `json:"nickname,omitempty"`        // 用户的昵称
@@ -32,9 +32,9 @@ type PublicUserInfo struct {
 
 //获取用户基本信息(UnionID机制)
 //文档地址 https://developers.weixin.qq.com/doc/offiaccount/User_Management/Get_users_basic_information_UnionID.html#UinonId
-func (s *SDK) Openid2UserInfo(ctx context.Context, openid string) (user *PublicUserInfo, err error) {
+func (s *SDK) Openid2UserInfo(ctx context.Context, openid string) (user *UserInfo, err error) {
 
-	user = &PublicUserInfo{}
+	user = &UserInfo{}
 	url := "https://api.weixin.qq.com/cgi-bin/user/info?access_token=" + s.AccessToken + "&openid=" + openid + "&lang=zh_CN"
 
 	if err = common.DoRequestGet(ctx, url, user); err != nil {
@@ -42,4 +42,67 @@ func (s *SDK) Openid2UserInfo(ctx context.Context, openid string) (user *PublicU
 	}
 
 	return user, nil
+}
+
+type UserList struct {
+	UserInfoList []*UserInfo `json:"user_info_list"`
+}
+type BatchGetUserListParam struct {
+	Openid string `json:"openid"`
+	Lang   string `json:"lang"`
+}
+
+//获取用户基本信息批量(UnionID机制)
+//文档地址 https://developers.weixin.qq.com/doc/offiaccount/User_Management/Get_users_basic_information_UnionID.html#UinonId
+func (s *SDK) Openid2UserInfoBatch(ctx context.Context, openids []string, lang string) (user *UserList, err error) {
+
+	user = &UserList{}
+	url := "https://api.weixin.qq.com/cgi-bin/user/info/batchget?access_token=" + s.AccessToken
+
+	if lang == "" {
+		lang = "zh_CN"
+	}
+
+	openidList := []BatchGetUserListParam{}
+	for _, v := range openids {
+		openidList = append(openidList, BatchGetUserListParam{
+			Openid: v,
+			Lang:   lang,
+		})
+	}
+
+	param := make(map[string]interface{})
+	param["user_list"] = openidList
+
+	if err = common.DoRequestPost(ctx, url, param, user); err != nil {
+		return nil, fmt.Errorf("do request get userinfo: %w", err)
+	}
+
+	return user, nil
+}
+
+type UserOpenidList struct {
+	Total      int32  `json:"total"`                 //关注该公众账号的总用户数
+	Count      int32  `json:"count"`                 //拉取的 OPENID 个数，最大值为10000(本次列表中数量)
+	NextOpenid string `json:"next_openid,omitempty"` //拉取列表的最后一个用户的OPENID
+	Data       struct {
+		Openid []string `json:"openid,omitempty"` //列表数据，OPENID的列表
+	} `json:"data,omitempty"`
+}
+
+//获取用户列表(关注过公众号列表)
+//文档地址 https://developers.weixin.qq.com/doc/offiaccount/User_Management/Getting_a_User_List.html
+func (s *SDK) GetUserOpenidList(ctx context.Context, nextOpenid string) (list *UserOpenidList, err error) {
+
+	list = &UserOpenidList{}
+
+	url := "https://api.weixin.qq.com/cgi-bin/user/get?access_token=" + s.AccessToken + "&next_openid=" + nextOpenid
+
+	fmt.Println("GET:", url)
+
+	if err = common.DoRequestGet(ctx, url, list); err != nil {
+		return nil, fmt.Errorf("do request get userlist: %w", err)
+	}
+
+	return list, nil
 }
