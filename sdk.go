@@ -8,6 +8,7 @@ import (
 	"github.com/medreams/wechat/mini"
 	"github.com/medreams/wechat/official"
 	"github.com/medreams/wechat/open"
+	"github.com/medreams/wechat/we"
 )
 
 type WeChatSDK struct {
@@ -39,19 +40,24 @@ func NewWeChatSDK(ctx context.Context, appId, appSecret string, isAccessToken ..
 	return sdk
 }
 
-//小程序
+// 小程序
 func (sdk *WeChatSDK) NewMini() *mini.SDK {
 	return mini.New(sdk.AppId, sdk.AppSecret, sdk.tokenInfo.AccessToken)
 }
 
-//公众号
+// 公众号
 func (sdk *WeChatSDK) NewOfficial() *official.SDK {
 	return official.New(sdk.AppId, sdk.AppSecret, sdk.tokenInfo.AccessToken)
 }
 
-//开放平台
+// 开放平台
 func (sdk *WeChatSDK) NewOpen() *open.SDK {
 	return open.New(sdk.AppId, sdk.AppSecret, sdk.tokenInfo.AccessToken)
+}
+
+// 公共
+func (sdk *WeChatSDK) NewWe() *we.SDK {
+	return we.New(sdk.AppId, sdk.AppSecret, sdk.tokenInfo.AccessToken)
 }
 
 func (sdk *WeChatSDK) SetAccessToken(token common.WxAccessToken) (err error) {

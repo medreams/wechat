@@ -1,4 +1,4 @@
-package mini
+package we
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"github.com/medreams/wechat/common"
 )
 
-//WxSubscribeMessageTemplate
+// WxSubscribeMessageTemplate
 type WxSubscribeMessageTemplate struct {
 	PriTmplId string `form:"priTmplId" json:"priTmplId"` //模板ID
 	Title     string `form:"title" json:"title"`         //模板标题
@@ -22,17 +22,18 @@ type WxGetTemplateRes struct {
 	Data    []WxSubscribeMessageTemplate `form:"data" json:"data"`
 }
 
-//WxSendTemplateMessageParam 发送订阅消息
+// WxSendTemplateMessageParam 发送订阅消息
 type WxSendTemplateMessageParam struct {
 	Touser           string                 `form:"touser" json:"touser" binding:"required,min=2,max=30"`    //接收用户openid
 	TemplateID       string                 `form:"template_id" json:"template_id" binding:"required,min=1"` //消息模版ID
 	Page             string                 `form:"page" json:"page" binding:"min=4"`                        //点击后的跳转页面，仅限本小程序内的页面
 	Data             map[string]interface{} `form:"data" json:"data" binding:"required"`                     //模板内容
-	MiniprogramState string                 `form:"miniprogram_state" json:"miniprogram_state"`              //跳转小程序类型：developer为开发版；trial为体验版；formal为正式版；默认为正式版
+	MiniprogramState string                 `form:"miniprogram_state" json:"miniprogram_state"`              //（小程序必填）跳转小程序类型：developer为开发版；trial为体验版；formal为正式版；默认为正式版
+	Miniprogram      map[string]interface{} `form:"miniprogram" json:"miniprogram"`                          //（公众号可选）跳转小程序时填写，格式如{ "appid": "pagepath": { "value": any } }
 	Lang             string                 `form:"lang" json:"lang"`                                        //进入小程序查看”的语言类型，支持zh_CN(简体中文)、en_US(英文)、zh_HK(繁体中文)、zh_TW(繁体中文)，默认为zh_CN
 }
 
-// GetSubscribeTemplateList 获取订阅模版
+// GetSubscribeTemplateList 获取私有订阅模版
 func (sdk *SDK) GetSubscribeTemplateList(ctx context.Context, appid string) (template *WxGetTemplateRes, err error) {
 	template = &WxGetTemplateRes{}
 
@@ -56,7 +57,8 @@ func (sdk *SDK) SendSubscribeMessage(ctx context.Context, param *WxSendTemplateM
 	bodyMap["template_id"] = param.TemplateID
 	bodyMap["page"] = param.Page
 	bodyMap["data"] = param.Data
-	bodyMap["miniprogram_state"] = param.MiniprogramState
+	bodyMap["miniprogram_state"] = param.MiniprogramState //小程序
+	bodyMap["miniprogram"] = param.Miniprogram            //公众号
 	bodyMap["lang"] = param.Lang
 
 	req := &common.WxCommonResponse{}
