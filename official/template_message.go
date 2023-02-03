@@ -3,6 +3,7 @@ package official
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/medreams/wechat/common"
 )
@@ -21,7 +22,7 @@ type WxMessageTemplate struct {
 type WxSendTemplateMessageRes struct {
 	ErrCode int64  `json:"errcode"`
 	ErrMsg  string `json:"errmsg"`
-	Msgid   string `json:"msgid"`
+	Msgid   int64  `json:"msgid"`
 }
 
 type WxGetTemplateRes struct {
@@ -49,7 +50,7 @@ type WxSendTemplateMessageParam struct {
 }
 
 // GetTemplateList 获取私有模版
-func (sdk *SDK) GetTemplateList(ctx context.Context, appid string) (template *WxGetTemplateRes, err error) {
+func (sdk *SDK) GetMessageTemplateList(ctx context.Context, appid string) (template *WxGetTemplateRes, err error) {
 	template = &WxGetTemplateRes{}
 
 	uri := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/template/get_all_private_template?access_token=%s", sdk.AccessToken)
@@ -102,5 +103,5 @@ func (sdk *SDK) SendTemplateMessage(ctx context.Context, param *WxSendTemplateMe
 		return "", fmt.Errorf("ErrCode(%d) != 0", req.ErrCode)
 	}
 
-	return req.Msgid, nil
+	return strconv.FormatInt(req.Msgid, 10), nil
 }
