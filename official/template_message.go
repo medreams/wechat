@@ -10,12 +10,12 @@ import (
 
 // WxMessageTemplate
 type WxMessageTemplate struct {
-	TemplateId      string `form:"template_id" json:"template_id"`           //模板ID
-	Title           string `form:"title" json:"title"`                       //模板标题
-	PrimaryIndustry string `form:"primary_industry" json:"primary_industry"` //模板所属行业的一级行业
-	DeputyIndustry  string `form:"deputy_industry" json:"deputy_industry"`   //模板所属行业的二级行业
-	Content         string `form:"content" json:"content"`                   //模板内容
-	Example         string `form:"example" json:"example"`                   //模板示例
+	TemplateId      string `json:"template_id"`      //模板ID
+	Title           string `json:"title"`            //模板标题
+	PrimaryIndustry string `json:"primary_industry"` //模板所属行业的一级行业
+	DeputyIndustry  string `json:"deputy_industry"`  //模板所属行业的二级行业
+	Content         string `json:"content"`          //模板内容
+	Example         string `json:"example"`          //模板示例
 
 }
 
@@ -26,27 +26,26 @@ type WxSendTemplateMessageRes struct {
 }
 
 type WxGetTemplateRes struct {
-	Errmsg       string              `form:"errmsg" json:"errmsg"`
-	Errcode      int32               `form:"errcode" json:"errcode"`
-	TemplateList []WxMessageTemplate `form:"template_list" json:"template_list"`
+	Errmsg       string              `json:"errmsg"`
+	Errcode      int32               `json:"errcode"`
+	TemplateList []WxMessageTemplate `json:"template_list"`
 }
 
 // 小程序跳转参数
 type WxMiniprogram struct {
-	Appid    string `form:"appid" json:"appid"`       //所需跳转到的小程序appid（该小程序 appid 必须与发模板消息的公众号是绑定关联关系，暂不支持小游戏）
-	Pagepath string `form:"pagepath" json:"pagepath"` //所需跳转到小程序的具体页面路径，支持带参数,（示例index?foo=bar），要求该小程序已发布，暂不支持小游戏
-
+	Appid    string `json:"appid"`              //所需跳转到的小程序appid（该小程序 appid 必须与发模板消息的公众号是绑定关联关系，暂不支持小游戏）
+	Pagepath string `json:"pagepath,omitempty"` //所需跳转到小程序的具体页面路径，支持带参数,（示例index?foo=bar），要求该小程序已发布，暂不支持小游戏
 }
 
 // WxSendTemplateMessageParam 发送订阅消息
 type WxSendTemplateMessageParam struct {
-	Touser      string                 `form:"touser" json:"touser" binding:"required,min=2,max=30"`    //接收用户openid
-	TemplateID  string                 `form:"template_id" json:"template_id" binding:"required,min=1"` //消息模版ID
-	Url         string                 `form:"url" json:"url" binding:"min=4"`                          //点击后的跳转页面，仅限本小程序内的页面
-	Data        map[string]interface{} `form:"data" json:"data" binding:"required"`                     //模板内容
-	Color       string                 `form:"color" json:"color"`                                      //模板内容字体颜色，不填默认为黑色
-	Miniprogram WxMiniprogram          `form:"miniprogram" json:"miniprogram"`
-	ClientMsgId string                 `form:"client_msg_id" json:"client_msg_id"` //防重入id。对于同一个openid + client_msg_id, 只发送一条消息,10分钟有效,超过10分钟不保证效果。若无防重入需求，可不填
+	Touser      string                 `json:"touser"`          //接收用户openid
+	TemplateID  string                 `json:"template_id"`     //消息模版ID
+	Url         string                 `json:"url,omitempty"`   //点击后的跳转页面，仅限本小程序内的页面
+	Data        map[string]interface{} `json:"data"`            //模板内容
+	Color       string                 `json:"color,omitempty"` //模板内容字体颜色，不填默认为黑色
+	Miniprogram WxMiniprogram          `json:"miniprogram,omitempty"`
+	ClientMsgId string                 `json:"client_msg_id,omitempty"` //防重入id。对于同一个openid + client_msg_id, 只发送一条消息,10分钟有效,超过10分钟不保证效果。若无防重入需求，可不填
 }
 
 // GetTemplateList 获取私有模版
