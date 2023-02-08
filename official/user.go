@@ -30,8 +30,8 @@ type UserInfo struct {
 	Errmsg         string `json:"errmsg,omitempty"`          // 错误信息
 }
 
-//获取用户基本信息(UnionID机制)
-//文档地址 https://developers.weixin.qq.com/doc/offiaccount/User_Management/Get_users_basic_information_UnionID.html#UinonId
+// 获取用户基本信息(UnionID机制)
+// 文档地址 https://developers.weixin.qq.com/doc/offiaccount/User_Management/Get_users_basic_information_UnionID.html#UinonId
 func (s *SDK) Openid2UserInfo(ctx context.Context, openid string) (user *UserInfo, err error) {
 
 	user = &UserInfo{}
@@ -52,8 +52,8 @@ type BatchGetUserListParam struct {
 	Lang   string `json:"lang"`
 }
 
-//获取用户基本信息批量(UnionID机制)
-//文档地址 https://developers.weixin.qq.com/doc/offiaccount/User_Management/Get_users_basic_information_UnionID.html#UinonId
+// 获取用户基本信息批量(UnionID机制)
+// 文档地址 https://developers.weixin.qq.com/doc/offiaccount/User_Management/Get_users_basic_information_UnionID.html#UinonId
 func (s *SDK) Openid2UserInfoBatch(ctx context.Context, openids []string, lang string) (user *UserList, err error) {
 
 	user = &UserList{}
@@ -90,15 +90,15 @@ type UserOpenidList struct {
 	} `json:"data,omitempty"`
 }
 
-//获取用户列表(关注过公众号列表)
-//文档地址 https://developers.weixin.qq.com/doc/offiaccount/User_Management/Getting_a_User_List.html
+// 获取用户列表(关注过公众号列表)
+// 文档地址 https://developers.weixin.qq.com/doc/offiaccount/User_Management/Getting_a_User_List.html
 func (s *SDK) GetUserOpenidList(ctx context.Context, nextOpenid string) (list *UserOpenidList, err error) {
 
 	list = &UserOpenidList{}
 
 	url := "https://api.weixin.qq.com/cgi-bin/user/get?access_token=" + s.AccessToken + "&next_openid=" + nextOpenid
 
-	fmt.Println("GET:", url)
+	// fmt.Println("GET:", url)
 
 	if err = common.DoRequestGet(ctx, url, list); err != nil {
 		return nil, fmt.Errorf("do request get userlist: %w", err)
