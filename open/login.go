@@ -1,4 +1,4 @@
-package official
+package open
 
 import (
 	"context"
@@ -57,26 +57,11 @@ func (s *SDK) RefreshAccessToken(ctx context.Context, refreshToken string) (at *
 	return at, nil
 }
 
-// 公众号网页授权获取的access_token拉取用户信息
-func (s *SDK) WebAccessTokenAndOpenid2UserInfo(ctx context.Context, webAccessToken string, openid string) (userinfo *UserInfo, err error) {
-	userinfo = &UserInfo{}
+// 网站应用微信登录
+func (s *SDK) WebLoginUrl(ctx context.Context, redirectUri string, state string) string {
 
-	URL := fmt.Sprintf("https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN", webAccessToken, openid)
-
-	if err = common.DoRequestGet(ctx, URL, userinfo); err != nil {
-		return nil, fmt.Errorf("do request get mp userinfo: %w", err)
-	}
-
-	return userinfo, nil
-}
-
-// 公众号网页获取授权code
-func (s *SDK) WebLoginUrl(ctx context.Context, redirectUri string, state string, scope string) string {
-	if scope == "" {
-		scope = "snsapi_base"
-	}
 	encodURL := url.QueryEscape(redirectUri)
-	uri := fmt.Sprintf("https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=%s&state=%s&lang=zh_CN#wechat_redirect", s.Appid, encodURL, scope, state)
+	uri := fmt.Sprintf("https://open.weixin.qq.com/connect/qrconnect?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_login&state=%s&lang=zh_CN#wechat_redirect", s.Appid, encodURL, state)
 
 	return uri
 }

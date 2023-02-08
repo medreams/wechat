@@ -22,8 +22,8 @@ type WxGetTemplateRes struct {
 	Data    []WxSubscribeMessageTemplate `json:"data"`
 }
 
-// WxSendTemplateMessageParam 发送订阅消息
-type WxSendTemplateMessageParam struct {
+// WxSubscribeMessageParam 发送订阅消息
+type WxSubscribeMessageParam struct {
 	Touser           string                 `json:"touser"`                      //接收用户openid
 	TemplateID       string                 `json:"template_id"`                 //消息模版ID
 	Page             string                 `json:"page"`                        //点击后的跳转页面，仅限本小程序内的页面
@@ -46,7 +46,7 @@ func (sdk *SDK) GetSubscribeTemplateList(ctx context.Context, appid string) (tem
 }
 
 // SendSubscribeMessage 发送模版信息
-func (sdk *SDK) SendSubscribeMessage(ctx context.Context, param *WxSendTemplateMessageParam) error {
+func (sdk *SDK) SendSubscribeMessage(ctx context.Context, param *WxSubscribeMessageParam) error {
 
 	if param.TemplateID == "" {
 		return fmt.Errorf("template_id is empty")
