@@ -32,7 +32,7 @@ func DoRequestGet(c context.Context, uri string, ptr interface{}) (err error) {
 		return err
 	}
 
-	fmt.Println("返回结果：", string(bs))
+	// fmt.Println("返回结果：", string(bs))
 
 	if err = json.Unmarshal(bs, ptr); err != nil {
 		return fmt.Errorf("json.Unmarshal(%s, %+v)：%w", string(bs), ptr, err)

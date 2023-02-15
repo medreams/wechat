@@ -24,7 +24,7 @@ type ReplyMsgCommon struct {
 	MsgType      CDATA    `xml:"MsgType"`
 }
 type ReplyText struct {
-	Content *CDATA `xml:"content"`
+	Content *CDATA `xml:"Content"`
 }
 type ReplyMedia struct {
 	MediaId     CDATA  `xml:"MediaId"`
@@ -60,6 +60,10 @@ type ReplyMessage struct {
 	Music        *ReplyMusic    `xml:"Music,omitempty"`
 	ArticleCount *int           `xml:"ArticleCount,omitempty"`
 	Articles     *ReplyArticles `xml:"Articles,omitempty"`
+}
+
+func NewReplyMessage() *ReplyMessage {
+	return &ReplyMessage{}
 }
 
 // 置文本信息的内容

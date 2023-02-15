@@ -135,6 +135,10 @@ type ReceivingMessage struct {
 	ReceivingEventMsg
 }
 
+func NewReceivingMessage() *ReceivingMessage {
+	return &ReceivingMessage{}
+}
+
 // 解析接收到的参数
 func (rm *ReceivingMessage) Unmarshal(xmldata []byte) (*ReceivingMessage, error) {
 	req := &ReceivingMessage{}
