@@ -17,9 +17,8 @@ type WxSubscribeMessageTemplate struct {
 }
 
 type WxGetTemplateRes struct {
-	Errmsg  string                       `json:"errmsg"`
-	Errcode int32                        `json:"errcode"`
-	Data    []WxSubscribeMessageTemplate `json:"data"`
+	common.WxCommonResponse
+	Data []WxSubscribeMessageTemplate `json:"data"`
 }
 
 // WxSubscribeMessageParam 发送订阅消息
@@ -34,15 +33,15 @@ type WxSubscribeMessageParam struct {
 }
 
 // GetSubscribeTemplateList 获取私有订阅模版
-func (sdk *SDK) GetSubscribeTemplateList(ctx context.Context, appid string) (template *WxGetTemplateRes, err error) {
-	template = &WxGetTemplateRes{}
+func (sdk *SDK) GetSubscribeTemplateList(ctx context.Context, appid string) (req *WxGetTemplateRes, err error) {
+	req = &WxGetTemplateRes{}
 
 	uri := fmt.Sprintf("https://api.weixin.qq.com/wxaapi/newtmpl/gettemplate?access_token=%s", sdk.AccessToken)
-	if err = common.DoRequestGet(ctx, uri, template); err != nil {
+	if err = common.DoRequestGet(ctx, uri, req); err != nil {
 		return nil, fmt.Errorf("do request: %w", err)
 	}
 
-	return template, nil
+	return req, nil
 }
 
 // SendSubscribeMessage 发送模版信息
@@ -52,19 +51,19 @@ func (sdk *SDK) SendSubscribeMessage(ctx context.Context, param *WxSubscribeMess
 		return fmt.Errorf("template_id is empty")
 	}
 
-	bodyMap := make(map[string]interface{})
-	bodyMap["touser"] = param.Touser
-	bodyMap["template_id"] = param.TemplateID
-	bodyMap["data"] = param.Data
-	bodyMap["lang"] = param.Lang
+	bodyMap := make(common.BodyMap)
+	bodyMap.Set("touser", param.Touser)
+	bodyMap.Set("template_id", param.TemplateID)
+	bodyMap.Set("data", param.Data)
+	bodyMap.Set("lang", param.Lang)
 
 	if param.Page != "" {
-		bodyMap["page"] = param.Page
+		bodyMap.Set("page", param.Page)
 	}
 	if len(param.Miniprogram) > 0 {
-		bodyMap["miniprogram"] = param.Miniprogram //公众号
+		bodyMap.Set("miniprogram", param.Miniprogram) //公众号
 	} else {
-		bodyMap["miniprogram_state"] = param.MiniprogramState //小程序
+		bodyMap.Set("miniprogram_state", param.MiniprogramState) //小程序
 	}
 
 	req := &common.WxCommonResponse{}

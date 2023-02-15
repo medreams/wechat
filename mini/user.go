@@ -8,22 +8,21 @@ import (
 )
 
 type PaidUnionId struct {
+	common.WxCommonResponse
 	Unionid string `json:"unionid,omitempty"` // 用户在开放平台的唯一标识符
-	Errcode int    `json:"errcode,omitempty"` // 错误码
-	Errmsg  string `json:"errmsg,omitempty"`  // 错误信息
 }
 
 func (s *SDK) GetPaidUnionId(c context.Context, openid string) (unionId string, err error) {
 
 	PaidUnionId := &PaidUnionId{}
-	uri := "https://api.weixin.qq.com/wxa/getpaidunionid?access_token=ACCESS_TOKEN&openid=OPENID"
+	uri := fmt.Sprintf("https://api.weixin.qq.com/wxa/getpaidunionid?access_token=%s&openid=%s", s.AccessToken, openid)
 
 	if err = common.DoRequestGet(c, uri, PaidUnionId); err != nil {
 		return "", fmt.Errorf("do request get unionId: %w", err)
 	}
 
-	if PaidUnionId.Errcode != 0 {
-		return "", fmt.Errorf("get unionId error: %d, %s", PaidUnionId.Errcode, PaidUnionId.Errmsg)
+	if PaidUnionId.ErrCode != 0 {
+		return "", fmt.Errorf("get unionId error: %d, %s", PaidUnionId.ErrCode, PaidUnionId.ErrMsg)
 	}
 
 	return PaidUnionId.Unionid, nil

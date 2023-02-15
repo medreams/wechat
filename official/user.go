@@ -9,6 +9,7 @@ import (
 
 // 微信公众号用户信息
 type UserInfo struct {
+	common.WxCommonResponse
 	Subscribe      int    `json:"subscribe,omitempty"`       // 用户是否订阅该公众号标识，值为0时，代表此用户没有关注该公众号，拉取不到其余信息。
 	Openid         string `json:"openid,omitempty"`          // 用户唯一标识
 	Nickname       string `json:"nickname,omitempty"`        // 用户的昵称
@@ -26,8 +27,6 @@ type UserInfo struct {
 	SubscribeScene string `json:"subscribe_scene,omitempty"` // 返回用户关注的渠道来源，ADD_SCENE_SEARCH 公众号搜索，ADD_SCENE_ACCOUNT_MIGRATION 公众号迁移，ADD_SCENE_PROFILE_CARD 名片分享，ADD_SCENE_QR_CODE 扫描二维码，ADD_SCENEPROFILE LINK 图文页内名称点击，ADD_SCENE_PROFILE_ITEM 图文页右上角菜单，ADD_SCENE_PAID 支付后关注，ADD_SCENE_OTHERS 其他
 	QrScene        int    `json:"qr_scene,omitempty"`        // 二维码扫码场景（开发者自定义）
 	QrSceneStr     string `json:"qr_scene_str,omitempty"`    // 二维码扫码场景描述（开发者自定义）
-	Errcode        int    `json:"errcode,omitempty"`         // 错误码
-	Errmsg         string `json:"errmsg,omitempty"`          // 错误信息
 }
 
 // 获取用户基本信息(UnionID机制)
@@ -71,7 +70,7 @@ func (s *SDK) Openid2UserInfoBatch(ctx context.Context, openids []string, lang s
 		})
 	}
 
-	param := make(map[string]interface{})
+	param := make(common.BodyMap)
 	param["user_list"] = openidList
 
 	if err = common.DoRequestPost(ctx, url, param, user); err != nil {
@@ -92,17 +91,17 @@ type UserOpenidList struct {
 
 // 获取用户列表(关注过公众号列表)
 // 文档地址 https://developers.weixin.qq.com/doc/offiaccount/User_Management/Getting_a_User_List.html
-func (s *SDK) GetUserOpenidList(ctx context.Context, nextOpenid string) (list *UserOpenidList, err error) {
+func (s *SDK) GetUserOpenidList(ctx context.Context, nextOpenid string) (req *UserOpenidList, err error) {
 
-	list = &UserOpenidList{}
+	req = &UserOpenidList{}
 
 	url := "https://api.weixin.qq.com/cgi-bin/user/get?access_token=" + s.AccessToken + "&next_openid=" + nextOpenid
 
 	// fmt.Println("GET:", url)
 
-	if err = common.DoRequestGet(ctx, url, list); err != nil {
+	if err = common.DoRequestGet(ctx, url, req); err != nil {
 		return nil, fmt.Errorf("do request get userlist: %w", err)
 	}
 
-	return list, nil
+	return req, nil
 }

@@ -25,15 +25,15 @@ func (sdk *SDK) SendSubscribeMessage(ctx context.Context, param *WxSendSubscribe
 		return fmt.Errorf("template_id is empty")
 	}
 
-	bodyMap := make(map[string]interface{})
-	bodyMap["touser"] = param.Touser
-	bodyMap["template_id"] = param.TemplateID
-	bodyMap["scene"] = param.Scene
-	bodyMap["title"] = param.Title
-	bodyMap["data"] = param.Data
+	bodyMap := make(common.BodyMap)
+	bodyMap.Set("touser", param.Touser)
+	bodyMap.Set("template_id", param.TemplateID)
+	bodyMap.Set("scene", param.Scene)
+	bodyMap.Set("title", param.Title)
+	bodyMap.Set("data", param.Data)
 
 	if param.Url != "" {
-		bodyMap["url"] = param.Url
+		bodyMap.Set("url", param.Url)
 	}
 
 	req := &common.WxCommonResponse{}

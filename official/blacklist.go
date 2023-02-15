@@ -10,9 +10,9 @@ import (
 
 // 获取公众号的黑名单列表
 func (s *SDK) GetUserBlackList(ctx context.Context, beginOpenid string) (list *UserOpenidList, err error) {
-	params := map[string]interface{}{
-		"begin_openid": beginOpenid,
-	}
+	params := make(common.BodyMap)
+	params["begin_openid"] = beginOpenid
+
 	list = &UserOpenidList{}
 	url := "https://api.weixin.qq.com/cgi-bin/tags/members/getblacklist?access_token=" + s.AccessToken
 	if err = common.DoRequestPost(ctx, url, params, list); err != nil {
@@ -29,11 +29,11 @@ func (s *SDK) AddUsersToBlackList(ctx context.Context, openids []string) (rst *c
 		return nil, errors.New("一次最多20个openid")
 	}
 
-	params := map[string]interface{}{
-		"openid_list": openids,
-	}
+	bodyMap := make(common.BodyMap)
+	bodyMap.Set("openid_list", openids)
+
 	url := "https://api.weixin.qq.com/cgi-bin/tags/members/batchblacklist?access_token=" + s.AccessToken
-	if err = common.DoRequestPost(ctx, url, params, rst); err != nil {
+	if err = common.DoRequestPost(ctx, url, bodyMap, rst); err != nil {
 		return nil, fmt.Errorf("do request get user usertag id list: %w", err)
 	}
 
@@ -41,19 +41,19 @@ func (s *SDK) AddUsersToBlackList(ctx context.Context, openids []string) (rst *c
 }
 
 // 取消拉黑用户(一次20个)
-func (s *SDK) CancelUsersFromBlackList(ctx context.Context, openids []string) (rst *common.WxCommonResponse, err error) {
+func (s *SDK) CancelUsersFromBlackList(ctx context.Context, openids []string) (req *common.WxCommonResponse, err error) {
 
 	if len(openids) > 20 {
 		return nil, errors.New("一次最多20个openid")
 	}
 
-	params := map[string]interface{}{
-		"openid_list": openids,
-	}
+	bodyMap := make(common.BodyMap)
+	bodyMap.Set("openid_list", openids)
+
 	url := "https://api.weixin.qq.com/cgi-bin/tags/members/batchunblacklist?access_token=" + s.AccessToken
-	if err = common.DoRequestPost(ctx, url, params, rst); err != nil {
+	if err = common.DoRequestPost(ctx, url, bodyMap, req); err != nil {
 		return nil, fmt.Errorf("do request get user usertag id list: %w", err)
 	}
 
-	return rst, nil
+	return req, nil
 }

@@ -20,14 +20,12 @@ type WxMessageTemplate struct {
 }
 
 type WxSendTemplateMessageRes struct {
-	ErrCode int64  `json:"errcode"`
-	ErrMsg  string `json:"errmsg"`
-	Msgid   int64  `json:"msgid"`
+	common.WxCommonResponse
+	Msgid int64 `json:"msgid"`
 }
 
 type WxGetTemplateRes struct {
-	Errmsg       string              `json:"errmsg"`
-	Errcode      int32               `json:"errcode"`
+	common.WxCommonResponse
 	TemplateList []WxMessageTemplate `json:"template_list"`
 }
 
@@ -49,15 +47,15 @@ type WxSendTemplateMessageParam struct {
 }
 
 // GetTemplateList 获取私有模版
-func (sdk *SDK) GetMessageTemplateList(ctx context.Context, appid string) (template *WxGetTemplateRes, err error) {
-	template = &WxGetTemplateRes{}
+func (sdk *SDK) GetMessageTemplateList(ctx context.Context, appid string) (req *WxGetTemplateRes, err error) {
+	req = &WxGetTemplateRes{}
 
 	uri := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/template/get_all_private_template?access_token=%s", sdk.AccessToken)
-	if err = common.DoRequestGet(ctx, uri, template); err != nil {
+	if err = common.DoRequestGet(ctx, uri, req); err != nil {
 		return nil, fmt.Errorf("do request: %w", err)
 	}
 
-	return template, nil
+	return req, nil
 }
 
 // SendTemplateMessage 发送模版信息
@@ -70,25 +68,25 @@ func (sdk *SDK) SendTemplateMessage(ctx context.Context, param *WxSendTemplateMe
 		return "", fmt.Errorf("touser is empty")
 	}
 
-	bodyMap := make(map[string]interface{})
-	bodyMap["touser"] = param.Touser
-	bodyMap["template_id"] = param.TemplateID
-	bodyMap["data"] = param.Data
+	bodyMap := make(common.BodyMap)
+	bodyMap.Set("touser", param.Touser)
+	bodyMap.Set("template_id", param.TemplateID)
+	bodyMap.Set("data", param.Data)
 
 	if param.Color != "" {
-		bodyMap["color"] = param.Color
+		bodyMap.Set("color", param.Color)
 	}
 
 	if param.Miniprogram.Appid != "" {
-		bodyMap["miniprogram"] = param.Miniprogram //公众号
+		bodyMap.Set("miniprogram", param.Miniprogram) //公众号
 	}
 
 	if param.Color != "" {
-		bodyMap["url"] = param.Url
+		bodyMap.Set("url", param.Url)
 	}
 
 	if param.ClientMsgId != "" {
-		bodyMap["client_msg_id"] = param.ClientMsgId
+		bodyMap.Set("client_msg_id", param.ClientMsgId)
 	}
 
 	req := &WxSendTemplateMessageRes{}

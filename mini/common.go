@@ -11,7 +11,7 @@ type WxMiniQuota struct {
 	LongTimeLimit int `json:"long_time_limit,omitempty"`
 }
 
-//微信小程序链接过期参数
+// 微信小程序链接过期参数
 type WxMiniExpireParam struct {
 	IsExpire       bool  `form:"is_expire" json:"is_expire" binding:"required"`             //是否过期
 	ExpireType     int32 `form:"expire_type" json:"expire_type" binding:"required"`         //过期类型

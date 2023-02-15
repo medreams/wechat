@@ -21,108 +21,105 @@ type Tags struct {
 	Tags []TagData `json:"tags,omitempty"`
 }
 
-//创建标签
-func (s *SDK) CreateUserTag(ctx context.Context, tagName string) (tag *Tag, err error) {
+// 创建标签
+func (s *SDK) CreateUserTag(ctx context.Context, tagName string) (req *Tag, err error) {
 
-	params := map[string]interface{}{
-		"tag": map[string]interface{}{
-			"name": tagName,
-		},
-	}
+	bodyMap := make(common.BodyMap)
+	bodyMap.SetBodyMap("tag", func(b common.BodyMap) {
+		b.Set("name", tagName)
+	})
 
-	tag = &Tag{}
+	req = &Tag{}
 
 	url := "https://api.weixin.qq.com/cgi-bin/tags/create?access_token=" + s.AccessToken
 
-	if err = common.DoRequestPost(ctx, url, params, tag); err != nil {
+	if err = common.DoRequestPost(ctx, url, bodyMap, req); err != nil {
 		return nil, fmt.Errorf("do request create tag: %w", err)
 	}
 
-	return tag, nil
+	return req, nil
 }
 
-//编辑标签
-func (s *SDK) UpdateUserTag(ctx context.Context, tagId int, tagName string) (rst *common.WxCommonResponse, err error) {
+// 编辑标签
+func (s *SDK) UpdateUserTag(ctx context.Context, tagId int, tagName string) (req *common.WxCommonResponse, err error) {
 
-	params := map[string]interface{}{
-		"tag": map[string]interface{}{
-			"id":   tagId,
-			"name": tagName,
-		},
-	}
+	bodyMap := make(common.BodyMap)
+	bodyMap.SetBodyMap("tag", func(b common.BodyMap) {
+		b.Set("id", tagId)
+		b.Set("name", tagName)
+	})
 
 	url := "https://api.weixin.qq.com/cgi-bin/tags/update?access_token=" + s.AccessToken
 
-	if err = common.DoRequestPost(ctx, url, params, rst); err != nil {
+	if err = common.DoRequestPost(ctx, url, bodyMap, req); err != nil {
 		return nil, fmt.Errorf("do request get tags: %w", err)
 	}
 
-	return rst, nil
+	return req, nil
 }
 
 // 删除标签
-func (s *SDK) DeleteUserTag(ctx context.Context, tagId int) (rst *common.WxCommonResponse, err error) {
+func (s *SDK) DeleteUserTag(ctx context.Context, tagId int) (req *common.WxCommonResponse, err error) {
 
-	params := map[string]interface{}{
-		"tag": map[string]interface{}{
-			"id": tagId,
-		},
-	}
+	bodyMap := make(common.BodyMap)
+	bodyMap.SetBodyMap("tag", func(b common.BodyMap) {
+		b.Set("id", tagId)
+	})
 
 	url := "https://api.weixin.qq.com/cgi-bin/tags/delete?access_token=" + s.AccessToken
 
-	if err = common.DoRequestPost(ctx, url, params, rst); err != nil {
+	if err = common.DoRequestPost(ctx, url, bodyMap, req); err != nil {
 		return nil, fmt.Errorf("do request delete tags: %w", err)
 	}
 
-	return rst, nil
+	return req, nil
 }
 
 // 获取标签下粉丝列表
-func (s *SDK) GetUserTagUserList(ctx context.Context, tagId int, nextOpenid string) (list *UserOpenidList, err error) {
-	params := map[string]interface{}{
-		"tagid":       tagId,
-		"next_openid": nextOpenid,
-	}
+func (s *SDK) GetUserTagUserList(ctx context.Context, tagId int, nextOpenid string) (req *UserOpenidList, err error) {
 
-	list = &UserOpenidList{}
+	bodyMap := make(common.BodyMap)
+	bodyMap.Set("tagid", tagId)
+	bodyMap.Set("next_openid", nextOpenid)
+
+	req = &UserOpenidList{}
 
 	url := "https://api.weixin.qq.com/cgi-bin/user/tag/get?access_token=" + s.AccessToken
-	if err = common.DoRequestPost(ctx, url, params, list); err != nil {
+	if err = common.DoRequestPost(ctx, url, bodyMap, req); err != nil {
 		return nil, fmt.Errorf("do request get tag userlist: %w", err)
 	}
 
-	return list, nil
+	return req, nil
 }
 
 // 批量为用户打标签
-func (s *SDK) SetUserTagBatch(ctx context.Context, tagId int, openids []string) (rst *common.WxCommonResponse, err error) {
-	params := map[string]interface{}{
-		"tagid":       tagId,
-		"openid_list": openids,
-	}
+func (s *SDK) SetUserTagBatch(ctx context.Context, tagId int, openids []string) (req *common.WxCommonResponse, err error) {
+
+	bodyMap := make(common.BodyMap)
+	bodyMap.Set("tagid", tagId)
+	bodyMap.Set("openid_list", openids)
 
 	url := "https://api.weixin.qq.com/cgi-bin/tags/members/batchtagging?access_token=" + s.AccessToken
-	if err = common.DoRequestPost(ctx, url, params, rst); err != nil {
+	if err = common.DoRequestPost(ctx, url, bodyMap, req); err != nil {
 		return nil, fmt.Errorf("do request batch set user tag: %w", err)
 	}
 
-	return rst, nil
+	return req, nil
 }
 
 // 批量为用户取消标签
-func (s *SDK) UnSetUserTagBatch(ctx context.Context, tagId int, openids []string) (rst *common.WxCommonResponse, err error) {
-	params := map[string]interface{}{
-		"tagid":       tagId,
-		"openid_list": openids,
-	}
+func (s *SDK) UnSetUserTagBatch(ctx context.Context, tagId int, openids []string) (req *common.WxCommonResponse, err error) {
+
+	bodyMap := make(common.BodyMap)
+	bodyMap.Set("tagid", tagId)
+	bodyMap.Set("openid_list", openids)
 
 	url := "https://api.weixin.qq.com/cgi-bin/tags/members/batchuntagging?access_token=" + s.AccessToken
-	if err = common.DoRequestPost(ctx, url, params, rst); err != nil {
+	if err = common.DoRequestPost(ctx, url, bodyMap, req); err != nil {
 		return nil, fmt.Errorf("do request batch set user tag: %w", err)
 	}
 
-	return rst, nil
+	return req, nil
 }
 
 type TagIdListData struct {
@@ -130,15 +127,16 @@ type TagIdListData struct {
 }
 
 // 获取用户身上的标签列表
-func (s *SDK) GetUserUserTagIdList(ctx context.Context, openid string) (tagIdList *TagIdListData, err error) {
-	params := map[string]interface{}{
-		"openid": openid,
-	}
-	tagIdList = &TagIdListData{}
+func (s *SDK) GetUserUserTagIdList(ctx context.Context, openid string) (req *TagIdListData, err error) {
+
+	bodyMap := make(common.BodyMap)
+	bodyMap.Set("openid", openid)
+
+	req = &TagIdListData{}
 	url := "https://api.weixin.qq.com/cgi-bin/tags/getidlist?access_token=" + s.AccessToken
-	if err = common.DoRequestPost(ctx, url, params, tagIdList); err != nil {
+	if err = common.DoRequestPost(ctx, url, bodyMap, req); err != nil {
 		return nil, fmt.Errorf("do request get user usertag id list: %w", err)
 	}
 
-	return tagIdList, nil
+	return req, nil
 }

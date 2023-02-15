@@ -8,28 +8,27 @@ import (
 )
 
 type WxShortLink struct {
-	Link    string `json:"link,omitempty"`
-	Errcode int    `json:"errcode,omitempty"`
-	Errmsg  string `json:"errmsg,omitempty"`
+	common.WxCommonResponse
+	Link string `json:"link,omitempty"`
 }
 
-func (sdk *SDK) GetWxShortLink(ctx context.Context, pageUrl, title string, isPeermanent bool) (link *WxShortLink, err error) {
+func (sdk *SDK) GetWxShortLink(ctx context.Context, pageUrl, title string, isPeermanent bool) (req *WxShortLink, err error) {
 
-	bodyMap := make(map[string]interface{})
-	bodyMap["page_url"] = pageUrl
-	bodyMap["page_title"] = title
-	bodyMap["is_permanent"] = isPeermanent
+	bodyMap := make(common.BodyMap)
+	bodyMap.Set("page_url", pageUrl)
+	bodyMap.Set("page_title", title)
+	bodyMap.Set("is_permanent", isPeermanent)
 
-	wxShortLink := &WxShortLink{}
+	req = &WxShortLink{}
 	uri := fmt.Sprintf("https://api.weixin.qq.com/wxa/genwxashortlink?access_token=%s", sdk.AccessToken)
 
-	if err = common.DoRequestPost(ctx, uri, bodyMap, wxShortLink); err != nil {
+	if err = common.DoRequestPost(ctx, uri, bodyMap, req); err != nil {
 		return nil, fmt.Errorf("do request get wxShortLink: %w", err)
 	}
 
-	if wxShortLink.Errcode != 0 {
-		return nil, fmt.Errorf("get wxShortLink error: %d, %s", wxShortLink.Errcode, wxShortLink.Errmsg)
+	if req.ErrCode != 0 {
+		return nil, fmt.Errorf("get wxShortLink error: %d, %s", req.ErrCode, req.ErrMsg)
 	}
 
-	return wxShortLink, nil
+	return req, nil
 }

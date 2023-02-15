@@ -32,9 +32,9 @@ func (sdk *SDK) SendUniformTemplateMessage(ctx context.Context, param *WxSendUni
 		return fmt.Errorf("touser is empty")
 	}
 
-	bodyMap := make(map[string]interface{})
-	bodyMap["touser"] = param.Touser
-	bodyMap["mp_template_msg"] = param.MpTemplateMsg
+	bodyMap := make(common.BodyMap)
+	bodyMap.Set("touser", param.Touser)
+	bodyMap.Set("mp_template_msg", param.MpTemplateMsg)
 
 	req := &common.WxCommonResponse{}
 	uri := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/message/wxopen/template/uniform_send?access_token=%s", sdk.AccessToken)

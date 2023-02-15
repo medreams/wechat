@@ -11,8 +11,8 @@ import (
 )
 
 type WxCommonResponse struct {
-	ErrCode int64  `json:"errcode"`
-	ErrMsg  string `json:"errmsg"`
+	ErrCode int64  `json:"errcode,omitempty"`
+	ErrMsg  string `json:"errmsg,omitempty"`
 }
 
 func DoRequestGet(c context.Context, uri string, ptr interface{}) (err error) {
@@ -32,6 +32,8 @@ func DoRequestGet(c context.Context, uri string, ptr interface{}) (err error) {
 		return err
 	}
 
+	fmt.Println("返回结果：", string(bs))
+
 	if err = json.Unmarshal(bs, ptr); err != nil {
 		return fmt.Errorf("json.Unmarshal(%s, %+v)：%w", string(bs), ptr, err)
 	}
@@ -39,19 +41,9 @@ func DoRequestGet(c context.Context, uri string, ptr interface{}) (err error) {
 }
 
 func DoRequestPost(c context.Context, uri string, body map[string]interface{}, ptr interface{}) (err error) {
-	httpClient := xhttp.NewClient()
 
-	httpClient.Header.Add(xhttp.HeaderRequestID, fmt.Sprintf("%s-%d", util.RandomString(21), time.Now().Unix()))
-	res, bs, err := httpClient.Post(uri).SendBodyMap(body).EndBytes(c)
+	bs, err := DoRequestPostGetByte(c, uri, body)
 	if err != nil {
-		return fmt.Errorf("http.request(POST, %s)：%w", uri, err)
-	}
-
-	if res.StatusCode != 200 {
-		return fmt.Errorf("StatusCode(%d) != 200", res.StatusCode)
-	}
-
-	if err := CheckRequestError(bs); err != nil {
 		return err
 	}
 
@@ -79,6 +71,32 @@ func DoRequestPostGetByte(c context.Context, uri string, body map[string]interfa
 	}
 
 	return bs, nil
+}
+
+func DoUploadFile(c context.Context, uri string, body map[string]interface{}, ptr interface{}) error {
+	httpClient := xhttp.NewClient()
+	httpClient.Header.Add(xhttp.HeaderRequestID, fmt.Sprintf("%s-%d", util.RandomString(21), time.Now().Unix()))
+	res, bs, err := httpClient.Type(xhttp.TypeMultipartFormData).
+		Post(uri).
+		SendMultipartBodyMap(body).
+		EndBytes(c)
+	if err != nil {
+		return fmt.Errorf("http.request(POST, %s)：%w", uri, err)
+	}
+
+	if res.StatusCode != 200 {
+		return fmt.Errorf("StatusCode(%d) != 200", res.StatusCode)
+	}
+
+	if err := CheckRequestError(bs); err != nil {
+		return err
+	}
+
+	if err = json.Unmarshal(bs, ptr); err != nil {
+		return fmt.Errorf("json.Unmarshal(%s, %+v)：%w", string(bs), ptr, err)
+	}
+
+	return nil
 }
 
 func CheckRequestError(bs []byte) error {

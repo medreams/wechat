@@ -8,8 +8,7 @@ import (
 )
 
 type VehicleLicenseData struct {
-	Errcode        int    `json:"errcode"`         //错误码
-	Errmsg         string `json:"errmsg"`          //错误信息
+	common.WxCommonResponse
 	VehicleType    string `json:"vehicle_type"`    //车辆类型
 	Owner          string `json:"owner"`           //所有人
 	Addr           string `json:"add"`             //住址
@@ -27,32 +26,31 @@ type VehicleLicenseData struct {
 }
 
 // 行驾证识别 https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/img-ocr/ocr/vehicleLicenseOCR.html
-func (sdk *SDK) OcrVehicleLicense(ctx context.Context, imgUrl string) (dl *VehicleLicenseData, err error) {
+func (sdk *SDK) OcrVehicleLicense(ctx context.Context, imgUrl string) (req *VehicleLicenseData, err error) {
 
-	bodyMap := make(map[string]interface{})
+	bodyMap := make(common.BodyMap)
 	bodyMap["img_url"] = imgUrl
 
-	dl = &VehicleLicenseData{}
+	req = &VehicleLicenseData{}
 	uri := fmt.Sprintf("https://api.weixin.qq.com/cv/ocr/driving?access_token=%s", sdk.AccessToken)
 
-	if err = common.DoRequestPost(ctx, uri, bodyMap, dl); err != nil {
+	if err = common.DoRequestPost(ctx, uri, bodyMap, req); err != nil {
 		return nil, fmt.Errorf("do request get phone: %w", err)
 	}
 
-	return dl, nil
+	return req, nil
 }
 
 type BankCardData struct {
-	Errcode int    `json:"errcode"` //错误码
-	Errmsg  string `json:"errmsg"`  //错误信息
-	Number  string `json:"number"`  //银行卡号
+	common.WxCommonResponse
+	Number string `json:"number"` //银行卡号
 }
 
 // 银行卡识别 https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/img-ocr/ocr/bankCardOCR.html
 func (sdk *SDK) OcrBankCard(ctx context.Context, imgUrl string) (bc *BankCardData, err error) {
 
-	bodyMap := make(map[string]interface{})
-	bodyMap["img_url"] = imgUrl
+	bodyMap := make(common.BodyMap)
+	bodyMap.Set("img_url", imgUrl)
 
 	bc = &BankCardData{}
 	uri := fmt.Sprintf("https://api.weixin.qq.com/cv/ocr/bankcard?access_token=%s", sdk.AccessToken)
@@ -65,8 +63,7 @@ func (sdk *SDK) OcrBankCard(ctx context.Context, imgUrl string) (bc *BankCardDat
 }
 
 type BusinessLicenseData struct {
-	Errcode             int    `json:"errcode"`              //错误码
-	Errmsg              string `json:"errmsg"`               //错误信息
+	common.WxCommonResponse
 	RegNum              string `json:"regnum"`               //注册号
 	Serial              string `json:"serial"`               //编号
 	LegalRepresentative string `json:"legal_representative"` //法定代表人姓名
@@ -83,8 +80,8 @@ type BusinessLicenseData struct {
 
 func (sdk *SDK) OcrBusinessLicense(ctx context.Context, imgUrl string) (bl *BusinessLicenseData, err error) {
 
-	bodyMap := make(map[string]interface{})
-	bodyMap["img_url"] = imgUrl
+	bodyMap := make(common.BodyMap)
+	bodyMap.Set("img_url", imgUrl)
 
 	bl = &BusinessLicenseData{}
 	uri := fmt.Sprintf("https://api.weixin.qq.com/cv/ocr/bizlicense?access_token=%s", sdk.AccessToken)
@@ -97,8 +94,7 @@ func (sdk *SDK) OcrBusinessLicense(ctx context.Context, imgUrl string) (bl *Busi
 }
 
 type DriverLicenseData struct {
-	Errcode      int    `json:"errcode"`       //错误码
-	Errmsg       string `json:"errmsg"`        //错误信息
+	common.WxCommonResponse
 	IdNum        string `json:"id_num"`        //证号
 	Name         string `json:"name"`          //姓名
 	Sex          string `json:"sex"`           //性别
@@ -114,8 +110,8 @@ type DriverLicenseData struct {
 // 驾驶证识别 https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/img-ocr/ocr/driverLicenseOCR.html
 func (sdk *SDK) OcrDriverLicense(ctx context.Context, imgUrl string) (dl *DriverLicenseData, err error) {
 
-	bodyMap := make(map[string]interface{})
-	bodyMap["img_url"] = imgUrl
+	bodyMap := make(common.BodyMap)
+	bodyMap.Set("img_url", imgUrl)
 
 	dl = &DriverLicenseData{}
 	uri := fmt.Sprintf("https://api.weixin.qq.com/cv/ocr/bizlicense?access_token=%s", sdk.AccessToken)
@@ -128,8 +124,7 @@ func (sdk *SDK) OcrDriverLicense(ctx context.Context, imgUrl string) (dl *Driver
 }
 
 type IdCardData struct {
-	Errcode     int    `json:"errcode"`     //错误码
-	Errmsg      string `json:"errmsg"`      //错误信息
+	common.WxCommonResponse
 	Type        string `json:"type"`        //正面或背面，Front / Back
 	Name        string `json:"name"`        //正面返回，姓名
 	Id          string `json:"id"`          //正面返回，身份证号
@@ -142,8 +137,8 @@ type IdCardData struct {
 // 身份证识别 https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/img-ocr/ocr/idCardOCR.html
 func (sdk *SDK) OcrIdCard(ctx context.Context, imgUrl string) (id *IdCardData, err error) {
 
-	bodyMap := make(map[string]interface{})
-	bodyMap["img_url"] = imgUrl
+	bodyMap := make(common.BodyMap)
+	bodyMap.Set("img_url", imgUrl)
 
 	id = &IdCardData{}
 	uri := fmt.Sprintf("https://api.weixin.qq.com/cv/ocr/idcard?type=photo&access_token=%s", sdk.AccessToken)
