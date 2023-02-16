@@ -12,10 +12,10 @@ type PaidUnionId struct {
 	Unionid string `json:"unionid,omitempty"` // 用户在开放平台的唯一标识符
 }
 
-func (s *SDK) GetPaidUnionId(c context.Context, openid string) (unionId string, err error) {
+func (sdk *SDK) GetPaidUnionId(c context.Context, openid string) (unionId string, err error) {
 
 	PaidUnionId := &PaidUnionId{}
-	uri := fmt.Sprintf("https://api.weixin.qq.com/wxa/getpaidunionid?access_token=%s&openid=%s", s.AccessToken, openid)
+	uri := fmt.Sprintf("https://api.weixin.qq.com/wxa/getpaidunionid?access_token=%s&openid=%s", sdk.AccessToken, openid)
 
 	if err = common.DoRequestGet(c, uri, PaidUnionId); err != nil {
 		return "", fmt.Errorf("do request get unionId: %w", err)

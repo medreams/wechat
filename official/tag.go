@@ -22,7 +22,7 @@ type Tags struct {
 }
 
 // 创建标签
-func (s *SDK) CreateUserTag(ctx context.Context, tagName string) (req *Tag, err error) {
+func (sdk *SDK) CreateUserTag(ctx context.Context, tagName string) (req *Tag, err error) {
 
 	bodyMap := make(common.BodyMap)
 	bodyMap.SetBodyMap("tag", func(b common.BodyMap) {
@@ -31,7 +31,7 @@ func (s *SDK) CreateUserTag(ctx context.Context, tagName string) (req *Tag, err 
 
 	req = &Tag{}
 
-	url := "https://api.weixin.qq.com/cgi-bin/tags/create?access_token=" + s.AccessToken
+	url := "https://api.weixin.qq.com/cgi-bin/tags/create?access_token=" + sdk.AccessToken
 
 	if err = common.DoRequestPost(ctx, url, bodyMap, req); err != nil {
 		return nil, fmt.Errorf("do request create tag: %w", err)
@@ -59,14 +59,14 @@ func (s *SDK) UpdateUserTag(ctx context.Context, tagId int, tagName string) (req
 }
 
 // 删除标签
-func (s *SDK) DeleteUserTag(ctx context.Context, tagId int) (req *common.WxCommonResponse, err error) {
+func (sdk *SDK) DeleteUserTag(ctx context.Context, tagId int) (req *common.WxCommonResponse, err error) {
 
 	bodyMap := make(common.BodyMap)
 	bodyMap.SetBodyMap("tag", func(b common.BodyMap) {
 		b.Set("id", tagId)
 	})
 
-	url := "https://api.weixin.qq.com/cgi-bin/tags/delete?access_token=" + s.AccessToken
+	url := "https://api.weixin.qq.com/cgi-bin/tags/delete?access_token=" + sdk.AccessToken
 
 	if err = common.DoRequestPost(ctx, url, bodyMap, req); err != nil {
 		return nil, fmt.Errorf("do request delete tags: %w", err)
@@ -76,7 +76,7 @@ func (s *SDK) DeleteUserTag(ctx context.Context, tagId int) (req *common.WxCommo
 }
 
 // 获取标签下粉丝列表
-func (s *SDK) GetUserTagUserList(ctx context.Context, tagId int, nextOpenid string) (req *UserOpenidList, err error) {
+func (sdk *SDK) GetUserTagUserList(ctx context.Context, tagId int, nextOpenid string) (req *UserOpenidList, err error) {
 
 	bodyMap := make(common.BodyMap)
 	bodyMap.Set("tagid", tagId)
@@ -84,7 +84,7 @@ func (s *SDK) GetUserTagUserList(ctx context.Context, tagId int, nextOpenid stri
 
 	req = &UserOpenidList{}
 
-	url := "https://api.weixin.qq.com/cgi-bin/user/tag/get?access_token=" + s.AccessToken
+	url := "https://api.weixin.qq.com/cgi-bin/user/tag/get?access_token=" + sdk.AccessToken
 	if err = common.DoRequestPost(ctx, url, bodyMap, req); err != nil {
 		return nil, fmt.Errorf("do request get tag userlist: %w", err)
 	}
@@ -93,13 +93,13 @@ func (s *SDK) GetUserTagUserList(ctx context.Context, tagId int, nextOpenid stri
 }
 
 // 批量为用户打标签
-func (s *SDK) SetUserTagBatch(ctx context.Context, tagId int, openids []string) (req *common.WxCommonResponse, err error) {
+func (sdk *SDK) SetUserTagBatch(ctx context.Context, tagId int, openids []string) (req *common.WxCommonResponse, err error) {
 
 	bodyMap := make(common.BodyMap)
 	bodyMap.Set("tagid", tagId)
 	bodyMap.Set("openid_list", openids)
 
-	url := "https://api.weixin.qq.com/cgi-bin/tags/members/batchtagging?access_token=" + s.AccessToken
+	url := "https://api.weixin.qq.com/cgi-bin/tags/members/batchtagging?access_token=" + sdk.AccessToken
 	if err = common.DoRequestPost(ctx, url, bodyMap, req); err != nil {
 		return nil, fmt.Errorf("do request batch set user tag: %w", err)
 	}
@@ -108,13 +108,13 @@ func (s *SDK) SetUserTagBatch(ctx context.Context, tagId int, openids []string) 
 }
 
 // 批量为用户取消标签
-func (s *SDK) UnSetUserTagBatch(ctx context.Context, tagId int, openids []string) (req *common.WxCommonResponse, err error) {
+func (sdk *SDK) UnSetUserTagBatch(ctx context.Context, tagId int, openids []string) (req *common.WxCommonResponse, err error) {
 
 	bodyMap := make(common.BodyMap)
 	bodyMap.Set("tagid", tagId)
 	bodyMap.Set("openid_list", openids)
 
-	url := "https://api.weixin.qq.com/cgi-bin/tags/members/batchuntagging?access_token=" + s.AccessToken
+	url := "https://api.weixin.qq.com/cgi-bin/tags/members/batchuntagging?access_token=" + sdk.AccessToken
 	if err = common.DoRequestPost(ctx, url, bodyMap, req); err != nil {
 		return nil, fmt.Errorf("do request batch set user tag: %w", err)
 	}
@@ -127,13 +127,13 @@ type TagIdListData struct {
 }
 
 // 获取用户身上的标签列表
-func (s *SDK) GetUserUserTagIdList(ctx context.Context, openid string) (req *TagIdListData, err error) {
+func (sdk *SDK) GetUserUserTagIdList(ctx context.Context, openid string) (req *TagIdListData, err error) {
 
 	bodyMap := make(common.BodyMap)
 	bodyMap.Set("openid", openid)
 
 	req = &TagIdListData{}
-	url := "https://api.weixin.qq.com/cgi-bin/tags/getidlist?access_token=" + s.AccessToken
+	url := "https://api.weixin.qq.com/cgi-bin/tags/getidlist?access_token=" + sdk.AccessToken
 	if err = common.DoRequestPost(ctx, url, bodyMap, req); err != nil {
 		return nil, fmt.Errorf("do request get user usertag id list: %w", err)
 	}

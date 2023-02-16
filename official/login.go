@@ -20,9 +20,9 @@ type WxWebAccessToekn struct {
 }
 
 // 网页授权和开放平台网页code获取access_token(此access_token,只能在网页授权和开放平台网页中使用)
-func (s *SDK) Code2WebAccessToken(ctx context.Context, code string) (req *WxWebAccessToekn, err error) {
+func (sdk *SDK) Code2WebAccessToken(ctx context.Context, code string) (req *WxWebAccessToekn, err error) {
 	req = &WxWebAccessToekn{}
-	URL := fmt.Sprintf("https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code", s.Appid, s.Secret, code)
+	URL := fmt.Sprintf("https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code", sdk.Appid, sdk.Secret, code)
 
 	if err = common.DoRequestGet(ctx, URL, req); err != nil {
 		return nil, fmt.Errorf("do request get access_token: %w", err)
@@ -38,10 +38,10 @@ func (s *SDK) Code2WebAccessToken(ctx context.Context, code string) (req *WxWebA
 	return req, nil
 }
 
-func (s *SDK) RefreshAccessToken(ctx context.Context, refreshToken string) (req *WxWebAccessToekn, err error) {
+func (sdk *SDK) RefreshAccessToken(ctx context.Context, refreshToken string) (req *WxWebAccessToekn, err error) {
 
 	req = &WxWebAccessToekn{}
-	URL := fmt.Sprintf("https://api.weixin.qq.com/sns/oauth2/refresh_token?grant_type=refresh_token&appid=%s&refresh_token=%s", s.Appid, refreshToken)
+	URL := fmt.Sprintf("https://api.weixin.qq.com/sns/oauth2/refresh_token?grant_type=refresh_token&appid=%s&refresh_token=%s", sdk.Appid, refreshToken)
 
 	if err = common.DoRequestGet(ctx, URL, req); err != nil {
 		return nil, fmt.Errorf("do request get access_token: %w", err)
@@ -57,7 +57,7 @@ func (s *SDK) RefreshAccessToken(ctx context.Context, refreshToken string) (req 
 }
 
 // 公众号网页授权获取的access_token拉取用户信息
-func (s *SDK) WebAccessTokenAndOpenid2UserInfo(ctx context.Context, webAccessToken string, openid string) (req *UserInfo, err error) {
+func (sdk *SDK) WebAccessTokenAndOpenid2UserInfo(ctx context.Context, webAccessToken string, openid string) (req *UserInfo, err error) {
 	req = &UserInfo{}
 
 	URL := fmt.Sprintf("https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN", webAccessToken, openid)
@@ -70,12 +70,12 @@ func (s *SDK) WebAccessTokenAndOpenid2UserInfo(ctx context.Context, webAccessTok
 }
 
 // 公众号网页获取授权code
-func (s *SDK) WebLoginUrl(ctx context.Context, redirectUri string, state string, scope string) string {
+func (sdk *SDK) WebLoginUrl(ctx context.Context, redirectUri string, state string, scope string) string {
 	if scope == "" {
 		scope = "snsapi_base"
 	}
 	encodURL := url.QueryEscape(redirectUri)
-	uri := fmt.Sprintf("https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=%s&state=%s&lang=zh_CN#wechat_redirect", s.Appid, encodURL, scope, state)
+	uri := fmt.Sprintf("https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=%s&state=%s&lang=zh_CN#wechat_redirect", sdk.Appid, encodURL, scope, state)
 
 	return uri
 }

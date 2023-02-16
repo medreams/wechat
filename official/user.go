@@ -31,10 +31,10 @@ type UserInfo struct {
 
 // 获取用户基本信息(UnionID机制)
 // 文档地址 https://developers.weixin.qq.com/doc/offiaccount/User_Management/Get_users_basic_information_UnionID.html#UinonId
-func (s *SDK) Openid2UserInfo(ctx context.Context, openid string) (user *UserInfo, err error) {
+func (sdk *SDK) Openid2UserInfo(ctx context.Context, openid string) (user *UserInfo, err error) {
 
 	user = &UserInfo{}
-	url := "https://api.weixin.qq.com/cgi-bin/user/info?access_token=" + s.AccessToken + "&openid=" + openid + "&lang=zh_CN"
+	url := "https://api.weixin.qq.com/cgi-bin/user/info?access_token=" + sdk.AccessToken + "&openid=" + openid + "&lang=zh_CN"
 
 	if err = common.DoRequestGet(ctx, url, user); err != nil {
 		return nil, fmt.Errorf("do request get userinfo: %w", err)
@@ -53,10 +53,10 @@ type BatchGetUserListParam struct {
 
 // 获取用户基本信息批量(UnionID机制)
 // 文档地址 https://developers.weixin.qq.com/doc/offiaccount/User_Management/Get_users_basic_information_UnionID.html#UinonId
-func (s *SDK) Openid2UserInfoBatch(ctx context.Context, openids []string, lang string) (user *UserList, err error) {
+func (sdk *SDK) Openid2UserInfoBatch(ctx context.Context, openids []string, lang string) (user *UserList, err error) {
 
 	user = &UserList{}
-	url := "https://api.weixin.qq.com/cgi-bin/user/info/batchget?access_token=" + s.AccessToken
+	url := "https://api.weixin.qq.com/cgi-bin/user/info/batchget?access_token=" + sdk.AccessToken
 
 	if lang == "" {
 		lang = "zh_CN"
@@ -91,11 +91,11 @@ type UserOpenidList struct {
 
 // 获取用户列表(关注过公众号列表)
 // 文档地址 https://developers.weixin.qq.com/doc/offiaccount/User_Management/Getting_a_User_List.html
-func (s *SDK) GetUserOpenidList(ctx context.Context, nextOpenid string) (req *UserOpenidList, err error) {
+func (sdk *SDK) GetUserOpenidList(ctx context.Context, nextOpenid string) (req *UserOpenidList, err error) {
 
 	req = &UserOpenidList{}
 
-	url := "https://api.weixin.qq.com/cgi-bin/user/get?access_token=" + s.AccessToken + "&next_openid=" + nextOpenid
+	url := "https://api.weixin.qq.com/cgi-bin/user/get?access_token=" + sdk.AccessToken + "&next_openid=" + nextOpenid
 
 	// fmt.Println("GET:", url)
 
@@ -104,4 +104,24 @@ func (s *SDK) GetUserOpenidList(ctx context.Context, nextOpenid string) (req *Us
 	}
 
 	return req, nil
+}
+
+// 设置用户备注名 https://developers.weixin.qq.com/doc/offiaccount/User_Management/Configuring_user_notes.html
+func (sdk *SDK) SetUserRemark(ctx context.Context, openid, remark string) error {
+	bodyMap := make(common.BodyMap)
+	bodyMap.Set("openid", openid)
+	bodyMap.Set("remark", remark)
+
+	req := &common.WxCommonResponse{}
+	uri := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/user/info/updateremark?access_token=%s", sdk.AccessToken)
+
+	if err := common.DoRequestPost(ctx, uri, bodyMap, req); err != nil {
+		return fmt.Errorf("do request: %w", err)
+	}
+
+	if req.ErrCode != 0 {
+		return fmt.Errorf("ErrCode(%d) != 0", req.ErrCode)
+	}
+
+	return nil
 }

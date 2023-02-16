@@ -23,15 +23,20 @@ type ReplyMsgCommon struct {
 	CreateTime   int64    `xml:"CreateTime"`
 	MsgType      CDATA    `xml:"MsgType"`
 }
+
+// 文本信息
 type ReplyText struct {
 	Content *CDATA `xml:"Content"`
 }
+
+// 图片、视频
 type ReplyMedia struct {
 	MediaId     CDATA  `xml:"MediaId"`
 	Title       *CDATA `xml:"Title,omitempty"`
 	Description *CDATA `xml:"Description,omitempty"`
 }
 
+// 音乐信息
 type ReplyMusic struct {
 	Title        CDATA `xml:"Title"`
 	Description  CDATA `xml:"Description,omitempty"`
@@ -40,6 +45,7 @@ type ReplyMusic struct {
 	ThumbMediaId CDATA `xml:"ThumbMediaId"`
 }
 
+// 文章信息
 type ReplyArticleInfo struct {
 	Title       string `xml:"Title"`
 	Description string `xml:"Description"`
@@ -47,19 +53,26 @@ type ReplyArticleInfo struct {
 	URL         string `xml:"Url"`
 }
 
+// 文章信息列表
 type ReplyArticles struct {
 	Item []ReplyArticleInfo `xml:"item"`
+}
+
+// 消息转发指定客服
+type ReplyTransInfo struct {
+	KfAccount CDATA `xml:"KfAccount"`
 }
 
 type ReplyMessage struct {
 	ReplyMsgCommon
 	ReplyText
-	Image        *ReplyMedia    `xml:"Image,omitempty"`
-	Voice        *ReplyMedia    `xml:"Voice,omitempty"`
-	Video        *ReplyMedia    `xml:"Video,omitempty"`
-	Music        *ReplyMusic    `xml:"Music,omitempty"`
-	ArticleCount *int           `xml:"ArticleCount,omitempty"`
-	Articles     *ReplyArticles `xml:"Articles,omitempty"`
+	Image        *ReplyMedia     `xml:"Image,omitempty"`
+	Voice        *ReplyMedia     `xml:"Voice,omitempty"`
+	Video        *ReplyMedia     `xml:"Video,omitempty"`
+	Music        *ReplyMusic     `xml:"Music,omitempty"`
+	ArticleCount *int            `xml:"ArticleCount,omitempty"`
+	Articles     *ReplyArticles  `xml:"Articles,omitempty"`
+	TransInfo    *ReplyTransInfo `xml:"TransInfo,omitempty"`
 }
 
 func NewReplyMessage() *ReplyMessage {
@@ -122,6 +135,17 @@ func (rm *ReplyMessage) SetArticles(articleCount int, items []ReplyArticleInfo) 
 	rm.ArticleCount = &articleCount
 	rm.Articles = &ReplyArticles{
 		Item: items,
+	}
+}
+
+// 设置转发客户信息 如果kfAccount为空则不指定
+func (rm *ReplyMessage) SetTransInfo(kfAccount CDATA) {
+	rm.CreateTime = time.Now().Unix()
+	rm.MsgType = "transfer_customer_service"
+	if kfAccount != "" {
+		rm.TransInfo = &ReplyTransInfo{
+			KfAccount: kfAccount,
+		}
 	}
 }
 

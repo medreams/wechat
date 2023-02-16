@@ -34,30 +34,32 @@ view_miniprogram 点击菜单跳转小程序的事件推送
 subscribe/unsubscribe 关注/取消关注事件
 SCAN 扫描带参数二维码事件
 LOCATION 上报地理位置事件
+PUBLISHJOBFINISH 发布结果
+guide_qrcode_scan_event 扫顾问二维码后的事件
 **/
 
 // 扫码推事件
 type EventScanCodeInfo struct {
-	ScanType   string `xml:"ScanType"`
-	ScanResult string `xml:"ScanResult"`
+	ScanType   string `xml:"ScanType"`   //扫描类型，一般是qrcode
+	ScanResult string `xml:"ScanResult"` //扫描结果，即二维码对应的字符串信息
 }
 
 // 弹出系统拍照发图的事件
 type EventSendPicsInfo struct {
-	Count   string `xml:"Count"`
+	Count   string `xml:"Count"` //发送的图片数量
 	PicList struct {
-		Item struct {
-			PicMd5Sum string `xml:"PicMd5Sum"`
+		Item []struct {
+			PicMd5Sum string `xml:"PicMd5Sum"` //图片的MD5值，开发者若需要，可用于验证接收到图片
 		} `xml:"item"`
-	} `xml:"PicList"`
+	} `xml:"PicList"` //图片列表
 }
 
 type EventSendLocationInfo struct {
-	LocationX string `xml:"Location_X"`
-	LocationY string `xml:"Location_Y"`
-	Scale     string `xml:"Scale"`
-	Label     string `xml:"Label"`
-	Poiname   string `xml:"Poiname"`
+	LocationX string `xml:"Location_X"` //地理位置纬度
+	LocationY string `xml:"Location_Y"` //地理位置经度
+	Scale     string `xml:"Scale"`      //地图缩放大小
+	Label     string `xml:"Label"`      //地理位置信息
+	Poiname   string `xml:"Poiname"`    //朋友圈 POI 的名字，可能为空
 }
 
 type ReceivingEventMsg struct {
@@ -71,17 +73,21 @@ type ReceivingEventMsg struct {
 	Latitude         string                `xml:"Latitude,omitempty"`         //地理位置纬度
 	Longitude        string                `xml:"Longitude,omitempty"`        //地理位置经度
 	Precision        string                `xml:"Precision,omitempty"`        //地理位置精度
+	//发布事件
+	PublishEventInfo ReceivingPublishMsg `xml:"PublishEventInfo"`
+	//扫顾问二维码后的事件推送
+	GuideScanEvent ReceivingGuideScanMsg `xml:"GuideScanEvent"`
 }
 
 // 图片消息内容
 type ReceivingImageMsg struct {
-	PicUrl  string `json:"pic_url"`
-	MediaId string `json:"media_id"`
+	PicUrl  string `json:"pic_url"`  //图片链接（由系统生成）
+	MediaId string `json:"media_id"` //消息媒体id，可以调用获取临时素材接口拉取数据。
 }
 
 // 语音信息内容
 type ReceivingVoiceMsg struct {
-	MediaId     string `json:"media_id"`
+	MediaId     string `json:"media_id"`             //消息媒体id，可以调用获取临时素材接口拉取数据。
 	Format      string `xml:"Format,omitempty"`      //语音格式，如amr，speex等
 	Recognition string `xml:"Recognition,omitempty"` //语音识别结果，UTF8编码
 }
@@ -105,6 +111,30 @@ type ReceivingLinkMsg struct {
 	Title       string `xml:"Title,omitempty"`       //消息标题
 	Description string `xml:"Description,omitempty"` //消息描述
 	URL         string `xml:"Url,omitempty"`         //消息链接
+}
+
+// 发布信息
+type ReceivingPublishMsg struct {
+	PublishID     string   `xml:"publish_id"`     //发布任务id
+	PublishStatus string   `xml:"publish_status"` //发布状态，0:成功, 1:发布中，2:原创失败, 3: 常规失败, 4:平台审核不通过, 5:成功后用户删除所有文章, 6: 成功后系统封禁所有文章
+	ArticleID     string   `xml:"article_id"`     //当发布状态为0时（即成功）时，返回图文的 article_id，可用于“客服消息”场景
+	FailIdx       []string `xml:"fail_idx"`       //当发布状态为2或4时，返回不通过的文章编号，第一篇为 1；其他发布状态则为空
+	ArticleDetail struct {
+		Count string `xml:"count"` //当发布状态为0时（即成功）时，返回文章数量
+		Item  struct {
+			Idx        string `xml:"idx"`         //当发布状态为0时（即成功）时，返回文章对应的编号
+			ArticleURL string `xml:"article_url"` //当发布状态为0时（即成功）时，返回图文的永久链接
+		} `xml:"item"`
+	} `xml:"article_detail"`
+}
+
+// 扫顾问二维码后会触发事件推送
+type ReceivingGuideScanMsg struct {
+	QrcodeGuideAccount string `xml:"qrcode_guide_account"` //顾问微信号
+	QrcodeGuideOpenid  string `xml:"qrcode_guide_openid"`  //顾问 openid ,仅通过 openid 绑定的顾问有效
+	Openid             string `xml:"openid"`               //扫码微信用户openid
+	Action             string `xml:"action"`               //扫码结果类型（整型）
+	QrcodeInfo         string `xml:"qrcode_info"`          //生成二维码时填写的信息，开发者自行使用
 }
 
 type ReceivingMessage struct {
