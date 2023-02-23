@@ -22,9 +22,9 @@ type WxWebAccessToekn struct {
 // 网页授权和开放平台网页code获取access_token(此access_token,只能在网页授权和开放平台网页中使用)
 func (sdk *SDK) Code2WebAccessToken(ctx context.Context, code string) (req *WxWebAccessToekn, err error) {
 	req = &WxWebAccessToekn{}
-	URL := fmt.Sprintf("https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code", sdk.Appid, sdk.Secret, code)
+	uri := fmt.Sprintf("https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code", sdk.Appid, sdk.Secret, code)
 
-	if err = common.DoRequestGet(ctx, URL, req); err != nil {
+	if err = common.DoRequestGet(ctx, uri, req); err != nil {
 		return nil, fmt.Errorf("do request get access_token: %w", err)
 	}
 
@@ -39,11 +39,10 @@ func (sdk *SDK) Code2WebAccessToken(ctx context.Context, code string) (req *WxWe
 }
 
 func (sdk *SDK) RefreshAccessToken(ctx context.Context, refreshToken string) (req *WxWebAccessToekn, err error) {
-
 	req = &WxWebAccessToekn{}
-	URL := fmt.Sprintf("https://api.weixin.qq.com/sns/oauth2/refresh_token?grant_type=refresh_token&appid=%s&refresh_token=%s", sdk.Appid, refreshToken)
+	uri := fmt.Sprintf("https://api.weixin.qq.com/sns/oauth2/refresh_token?grant_type=refresh_token&appid=%s&refresh_token=%s", sdk.Appid, refreshToken)
 
-	if err = common.DoRequestGet(ctx, URL, req); err != nil {
+	if err = common.DoRequestGet(ctx, uri, req); err != nil {
 		return nil, fmt.Errorf("do request get access_token: %w", err)
 	}
 
@@ -60,9 +59,9 @@ func (sdk *SDK) RefreshAccessToken(ctx context.Context, refreshToken string) (re
 func (sdk *SDK) WebAccessTokenAndOpenid2UserInfo(ctx context.Context, webAccessToken string, openid string) (req *UserInfo, err error) {
 	req = &UserInfo{}
 
-	URL := fmt.Sprintf("https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN", webAccessToken, openid)
+	uri := fmt.Sprintf("https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN", webAccessToken, openid)
 
-	if err = common.DoRequestGet(ctx, URL, req); err != nil {
+	if err = common.DoRequestGet(ctx, uri, req); err != nil {
 		return nil, fmt.Errorf("do request get mp userinfo: %w", err)
 	}
 

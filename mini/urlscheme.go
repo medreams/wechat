@@ -33,8 +33,7 @@ type WxMiniSchemeInfo struct {
 	EnvVersion string `json:"env_version,omitempty"`
 }
 
-func (sdk *SDK) GenerateScheme(ctx context.Context, expire *WxMiniExpireParam, jw *WxMiniJumpWxa) (req *WxMiniScheme, err error) {
-
+func (sdk *SDK) GenerateScheme(ctx context.Context, expire *WxMiniExpireParam, jw *WxMiniJumpWxa) (*WxMiniScheme, error) {
 	bodyMap := make(common.BodyMap)
 	if expire != nil {
 		bodyMap.Set("is_expire", expire.IsExpire)     //生成的 scheme 码类型，到期失效：true，永久有效：false。注意，永久有效 scheme 和有效时间超过180天的到期失效 scheme 的总数上限为10万个
@@ -52,7 +51,7 @@ func (sdk *SDK) GenerateScheme(ctx context.Context, expire *WxMiniExpireParam, j
 		bodyMap.Set("expire_interval", 30)
 	}
 
-	req = &WxMiniScheme{}
+	req := &WxMiniScheme{}
 	uri := fmt.Sprintf("https://api.weixin.qq.com/wxa/generatescheme?access_token=%s", sdk.AccessToken)
 
 	if err := common.DoRequestPost(ctx, uri, bodyMap, req); err != nil {
@@ -62,12 +61,11 @@ func (sdk *SDK) GenerateScheme(ctx context.Context, expire *WxMiniExpireParam, j
 	return req, nil
 
 }
-func (sdk *SDK) QueryScheme(ctx context.Context, scheme string) (req *WxMiniSchemeQuery, err error) {
-
+func (sdk *SDK) QueryScheme(ctx context.Context, scheme string) (*WxMiniSchemeQuery, error) {
 	bodyMap := make(common.BodyMap)
 	bodyMap.Set("scheme", scheme)
 
-	req = &WxMiniSchemeQuery{}
+	req := &WxMiniSchemeQuery{}
 	uri := fmt.Sprintf("https://api.weixin.qq.com/wxa/queryscheme?access_token=%s", sdk.AccessToken)
 
 	if err := common.DoRequestPost(ctx, uri, bodyMap, req); err != nil {

@@ -47,12 +47,16 @@ type WxSendTemplateMessageParam struct {
 }
 
 // GetTemplateList 获取私有模版
-func (sdk *SDK) GetMessageTemplateList(ctx context.Context, appid string) (req *WxGetTemplateRes, err error) {
-	req = &WxGetTemplateRes{}
+func (sdk *SDK) GetMessageTemplateList(ctx context.Context, appid string) (*WxGetTemplateRes, error) {
+	req := &WxGetTemplateRes{}
 
 	uri := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/template/get_all_private_template?access_token=%s", sdk.AccessToken)
-	if err = common.DoRequestGet(ctx, uri, req); err != nil {
+	if err := common.DoRequestGet(ctx, uri, req); err != nil {
 		return nil, fmt.Errorf("do request: %w", err)
+	}
+
+	if req.ErrCode != 0 {
+		return nil, fmt.Errorf("ErrCode(%d) != 0", req.ErrCode)
 	}
 
 	return req, nil

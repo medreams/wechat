@@ -14,8 +14,8 @@ func (sdk *SDK) GetUserBlackList(ctx context.Context, beginOpenid string) (list 
 	bodyMap["begin_openid"] = beginOpenid
 
 	list = &UserOpenidList{}
-	url := "https://api.weixin.qq.com/cgi-bin/tags/members/getblacklist?access_token=" + sdk.AccessToken
-	if err = common.DoRequestPost(ctx, url, bodyMap, list); err != nil {
+	uri := "https://api.weixin.qq.com/cgi-bin/tags/members/getblacklist?access_token=" + sdk.AccessToken
+	if err = common.DoRequestPost(ctx, uri, bodyMap, list); err != nil {
 		return nil, fmt.Errorf("do request get user usertag id list: %w", err)
 	}
 
@@ -32,8 +32,8 @@ func (sdk *SDK) AddUsersToBlackList(ctx context.Context, openids []string) (rst 
 	bodyMap := make(common.BodyMap)
 	bodyMap.Set("openid_list", openids)
 
-	url := "https://api.weixin.qq.com/cgi-bin/tags/members/batchblacklist?access_token=" + sdk.AccessToken
-	if err = common.DoRequestPost(ctx, url, bodyMap, rst); err != nil {
+	uri := "https://api.weixin.qq.com/cgi-bin/tags/members/batchblacklist?access_token=" + sdk.AccessToken
+	if err = common.DoRequestPost(ctx, uri, bodyMap, rst); err != nil {
 		return nil, fmt.Errorf("do request get user usertag id list: %w", err)
 	}
 
@@ -50,8 +50,8 @@ func (sdk *SDK) CancelUsersFromBlackList(ctx context.Context, openids []string) 
 	bodyMap := make(common.BodyMap)
 	bodyMap.Set("openid_list", openids)
 
-	url := "https://api.weixin.qq.com/cgi-bin/tags/members/batchunblacklist?access_token=" + sdk.AccessToken
-	if err = common.DoRequestPost(ctx, url, bodyMap, req); err != nil {
+	uri := "https://api.weixin.qq.com/cgi-bin/tags/members/batchunblacklist?access_token=" + sdk.AccessToken
+	if err = common.DoRequestPost(ctx, uri, bodyMap, req); err != nil {
 		return nil, fmt.Errorf("do request get user usertag id list: %w", err)
 	}
 

@@ -14,16 +14,16 @@ type PaidUnionId struct {
 
 func (sdk *SDK) GetPaidUnionId(c context.Context, openid string) (unionId string, err error) {
 
-	PaidUnionId := &PaidUnionId{}
+	req := &PaidUnionId{}
 	uri := fmt.Sprintf("https://api.weixin.qq.com/wxa/getpaidunionid?access_token=%s&openid=%s", sdk.AccessToken, openid)
 
-	if err = common.DoRequestGet(c, uri, PaidUnionId); err != nil {
+	if err = common.DoRequestGet(c, uri, req); err != nil {
 		return "", fmt.Errorf("do request get unionId: %w", err)
 	}
 
-	if PaidUnionId.ErrCode != 0 {
-		return "", fmt.Errorf("get unionId error: %d, %s", PaidUnionId.ErrCode, PaidUnionId.ErrMsg)
+	if req.ErrCode != 0 {
+		return "", fmt.Errorf("get unionId error: %d, %s", req.ErrCode, req.ErrMsg)
 	}
 
-	return PaidUnionId.Unionid, nil
+	return req.Unionid, nil
 }

@@ -58,12 +58,12 @@ type GetSnTicketRsp struct {
 }
 
 // 获取设备票据 https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/hardware-device/getSnTicket.html
-func (sdk *SDK) GetSnTicket(ctx context.Context, param *GetSnTicketParam) (req *GetSnTicketRsp, err error) {
+func (sdk *SDK) GetSnTicket(ctx context.Context, param *GetSnTicketParam) (*GetSnTicketRsp, error) {
 	bodyMap := make(common.BodyMap)
 	bodyMap.Set("sn", param.Sn)
 	bodyMap.Set("model_id", param.ModelId)
 
-	req = &GetSnTicketRsp{}
+	req := &GetSnTicketRsp{}
 	uri := fmt.Sprintf("https://api.weixin.qq.com/wxa/getsnticket?access_token=%s", sdk.AccessToken)
 
 	if err := common.DoRequestPost(ctx, uri, bodyMap, req); err != nil {

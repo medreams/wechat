@@ -44,6 +44,7 @@ func (sdk *SDK) Openid2UserInfo(ctx context.Context, openid string) (user *UserI
 }
 
 type UserList struct {
+	common.WxCommonResponse
 	UserInfoList []*UserInfo `json:"user_info_list"`
 }
 type BatchGetUserListParam struct {
@@ -53,9 +54,9 @@ type BatchGetUserListParam struct {
 
 // 获取用户基本信息批量(UnionID机制)
 // 文档地址 https://developers.weixin.qq.com/doc/offiaccount/User_Management/Get_users_basic_information_UnionID.html#UinonId
-func (sdk *SDK) Openid2UserInfoBatch(ctx context.Context, openids []string, lang string) (user *UserList, err error) {
+func (sdk *SDK) Openid2UserInfoBatch(ctx context.Context, openids []string, lang string) (*UserList, error) {
 
-	user = &UserList{}
+	req := &UserList{}
 	url := "https://api.weixin.qq.com/cgi-bin/user/info/batchget?access_token=" + sdk.AccessToken
 
 	if lang == "" {
@@ -70,17 +71,22 @@ func (sdk *SDK) Openid2UserInfoBatch(ctx context.Context, openids []string, lang
 		})
 	}
 
-	param := make(common.BodyMap)
-	param["user_list"] = openidList
+	bodyMap := make(common.BodyMap)
+	bodyMap.Set("user_list", openidList)
 
-	if err = common.DoRequestPost(ctx, url, param, user); err != nil {
+	if err := common.DoRequestPost(ctx, url, bodyMap, req); err != nil {
 		return nil, fmt.Errorf("do request get userinfo: %w", err)
 	}
 
-	return user, nil
+	if req.ErrCode != 0 {
+		return nil, fmt.Errorf("ErrCode(%d) != 0", req.ErrCode)
+	}
+
+	return req, nil
 }
 
 type UserOpenidList struct {
+	common.WxCommonResponse
 	Total      int32  `json:"total"`                 //关注该公众账号的总用户数
 	Count      int32  `json:"count"`                 //拉取的 OPENID 个数，最大值为10000(本次列表中数量)
 	NextOpenid string `json:"next_openid,omitempty"` //拉取列表的最后一个用户的OPENID
@@ -91,16 +97,18 @@ type UserOpenidList struct {
 
 // 获取用户列表(关注过公众号列表)
 // 文档地址 https://developers.weixin.qq.com/doc/offiaccount/User_Management/Getting_a_User_List.html
-func (sdk *SDK) GetUserOpenidList(ctx context.Context, nextOpenid string) (req *UserOpenidList, err error) {
+func (sdk *SDK) GetUserOpenidList(ctx context.Context, nextOpenid string) (*UserOpenidList, error) {
 
-	req = &UserOpenidList{}
+	req := &UserOpenidList{}
 
 	url := "https://api.weixin.qq.com/cgi-bin/user/get?access_token=" + sdk.AccessToken + "&next_openid=" + nextOpenid
 
-	// fmt.Println("GET:", url)
-
-	if err = common.DoRequestGet(ctx, url, req); err != nil {
+	if err := common.DoRequestGet(ctx, url, req); err != nil {
 		return nil, fmt.Errorf("do request get userlist: %w", err)
+	}
+
+	if req.ErrCode != 0 {
+		return nil, fmt.Errorf("ErrCode(%d) != 0", req.ErrCode)
 	}
 
 	return req, nil

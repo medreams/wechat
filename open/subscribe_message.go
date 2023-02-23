@@ -20,7 +20,6 @@ type WxSendSubscribeMessageParam struct {
 // SendSubscribeMessage 发送模版信息
 // https://developers.weixin.qq.com/doc/oplatform/Mobile_App/One-time_subscription_info.html
 func (sdk *SDK) SendSubscribeMessage(ctx context.Context, param *WxSendSubscribeMessageParam) error {
-
 	if param.TemplateID == "" {
 		return fmt.Errorf("template_id is empty")
 	}

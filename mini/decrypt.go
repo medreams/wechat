@@ -23,7 +23,7 @@ type WxUserInfo struct {
 
 func (sdk *SDK) DecryptUserInfo(session_key, iv, encrypted_data string) (*WxUserInfo, error) {
 
-	dataBytes, err := common.Decrypt(session_key, iv, encrypted_data)
+	dataBytes, err := common.Dncrypt(encrypted_data, session_key, iv)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func (sdk *SDK) DecryptUserInfo(session_key, iv, encrypted_data string) (*WxUser
 
 func (sdk *SDK) DecryptUserPhone(session_key, iv, encrypted_data string) (*WxUserPhone, error) {
 
-	dataBytes, err := common.Decrypt(session_key, iv, encrypted_data)
+	dataBytes, err := common.Dncrypt(encrypted_data, session_key, iv)
 	if err != nil {
 		return nil, err
 	}

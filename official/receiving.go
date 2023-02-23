@@ -36,6 +36,14 @@ SCAN 扫描带参数二维码事件
 LOCATION 上报地理位置事件
 PUBLISHJOBFINISH 发布结果
 guide_qrcode_scan_event 扫顾问二维码后的事件
+
+认证事件
+qualification_verify_success 资质认证成功
+qualification_verify_fail 资质认证失败
+naming_verify_success 名称认证成功（即命名成功）
+naming_verify_fail 名称认证失败（这时虽然客户端不打勾，但仍有接口权限）
+annual_renew 年审通知
+verify_expired 认证过期失效通知审通知
 **/
 
 // 扫码推事件

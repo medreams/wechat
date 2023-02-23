@@ -39,7 +39,6 @@ func (sdk *SDK) Code2WebAccessToken(ctx context.Context, code string) (req *WxWe
 }
 
 func (sdk *SDK) RefreshAccessToken(ctx context.Context, refreshToken string) (req *WxWebAccessToekn, err error) {
-
 	req = &WxWebAccessToekn{}
 	URL := fmt.Sprintf("https://api.weixin.qq.com/sns/oauth2/refresh_token?grant_type=refresh_token&appid=%s&refresh_token=%s", sdk.Appid, refreshToken)
 
@@ -58,7 +57,6 @@ func (sdk *SDK) RefreshAccessToken(ctx context.Context, refreshToken string) (re
 
 // 网站应用微信登录
 func (sdk *SDK) WebLoginUrl(ctx context.Context, redirectUri string, state string) string {
-
 	encodURL := url.QueryEscape(redirectUri)
 	uri := fmt.Sprintf("https://open.weixin.qq.com/connect/qrconnect?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_login&state=%s&lang=zh_CN#wechat_redirect", sdk.Appid, encodURL, state)
 

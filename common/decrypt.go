@@ -4,105 +4,70 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/base64"
-	"encoding/json"
-	"errors"
-	"fmt"
-	"reflect"
-	"strings"
-
-	xaes "github.com/medreams/wechat/pkg/aes"
-	"github.com/medreams/wechat/pkg/util"
 )
 
-// DecryptOpenDataToStruct 解密开放数据到结构体
-//
-//	encryptedData：包括敏感数据在内的完整用户信息的加密数据，小程序获取到
-//	iv：加密算法的初始向量，小程序获取到
-//	sessionKey：会话密钥，通过  gopay.Code2Session() 方法获取到
-//	beanPtr：需要解析到的结构体指针，操作完后，声明的结构体会被赋值
-//	文档：https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/signature.html
-func DecryptOpenDataToStruct(encryptedData, iv, sessionKey string, beanPtr interface{}) (err error) {
-	if encryptedData == util.NULL || iv == util.NULL || sessionKey == util.NULL {
-		return errors.New("input params can not null")
+// CBC 模式
+//解密
+/**
+* rawData 原始加密数据
+* key  密钥
+* iv  向量
+ */
+func Dncrypt(rawData, key, iv string) ([]byte, error) {
+	data, err := base64.StdEncoding.DecodeString(rawData)
+	key_b, err_1 := base64.StdEncoding.DecodeString(key)
+	iv_b, _ := base64.StdEncoding.DecodeString(iv)
+	if err != nil {
+		return nil, err
 	}
-	var (
-		cipherText, aesKey, ivKey, plainText []byte
-		block                                cipher.Block
-		blockMode                            cipher.BlockMode
-	)
-	beanValue := reflect.ValueOf(beanPtr)
-	if beanValue.Kind() != reflect.Ptr {
-		return errors.New("传入beanPtr类型必须是以指针形式")
+	if err_1 != nil {
+		return nil, err_1
 	}
-	if beanValue.Elem().Kind() != reflect.Struct {
-		return errors.New("传入interface{}必须是结构体")
+	dnData, err := AesCBCDncrypt(data, key_b, iv_b)
+	if err != nil {
+		return nil, err
 	}
-	cipherText, _ = base64.StdEncoding.DecodeString(encryptedData)
-	aesKey, _ = base64.StdEncoding.DecodeString(sessionKey)
-	ivKey, _ = base64.StdEncoding.DecodeString(iv)
-	// fmt.Println("ivKey:", string(ivKey))
-	if len(cipherText)%len(aesKey) != 0 {
-		return errors.New("encryptedData is error")
-	}
-	if block, err = aes.NewCipher(aesKey); err != nil {
-		return fmt.Errorf("aes.NewCipher：%w", err)
-	}
-	blockMode = cipher.NewCBCDecrypter(block, ivKey)
-	plainText = make([]byte, len(cipherText))
-	blockMode.CryptBlocks(plainText, cipherText)
-	if len(plainText) > 0 {
-		plainText = xaes.PKCS7UnPadding(plainText)
-	}
-	if err = json.Unmarshal(plainText, beanPtr); err != nil {
-		return fmt.Errorf("json.Marshal(%s)：%w", string(plainText), err)
-	}
-
-	return
+	return dnData, nil
 }
 
-// 解密开放数据
-func Decrypt(session_key, iv, encrypted_data string) ([]byte, error) {
-	if len := strings.Count(session_key, "") - 1; len != 24 {
-		return nil, errors.New("invalid value session_key")
-	}
-	aesKey, err := base64.StdEncoding.DecodeString(session_key)
-	if err != nil {
-		return nil, err
-	}
-
-	if len := strings.Count(iv, "") - 1; len != 24 {
-		return nil, errors.New("invalid value iv")
-	}
-	ivKey, err := base64.StdEncoding.DecodeString(iv)
-	if err != nil {
-		return nil, err
-	}
-
-	decodeData, err := base64.StdEncoding.DecodeString(encrypted_data)
-	if err != nil {
-		return nil, err
-	}
-
-	dataBytes, err := AesDecrypt(decodeData, aesKey, ivKey)
-	if err != nil {
-		return nil, err
-	}
-
-	return dataBytes, nil
-}
-
-func AesDecrypt(crypted, key, iv []byte) ([]byte, error) {
+// 解密
+func AesCBCDncrypt(encryptData, key, iv []byte) ([]byte, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
-
-	blockMode := cipher.NewCBCDecrypter(block, iv)
-	origData := make([]byte, len(crypted))
-	blockMode.CryptBlocks(origData, crypted)
-
-	// 去除填充
-	length := len(origData)
-	unp := int(origData[length-1])
-	return origData[:(length - unp)], nil
+	blockSize := block.BlockSize()
+	if len(encryptData) < blockSize {
+		panic("ciphertext too short")
+	}
+	if len(encryptData)%blockSize != 0 {
+		panic("ciphertext is not a multiple of the block size")
+	}
+	mode := cipher.NewCBCDecrypter(block, iv)
+	mode.CryptBlocks(encryptData, encryptData)
+	// 解填充
+	encryptData = PKCS7UnPadding(encryptData)
+	return encryptData, nil
 }
+
+// 去除填充
+func PKCS7UnPadding(origData []byte) []byte {
+	length := len(origData)
+	unpadding := int(origData[length-1])
+	return origData[:(length - unpadding)]
+}
+
+// func main() {
+
+// 	sessionKey := "=="
+// 	encryptedData := "
+// 	iv := ""
+
+// 	src, err := Dncrypt(encryptedData, sessionKey, iv)
+// 	fmt.Println(err)
+// 	var s = map[string]interface{}{}
+// 	json.Unmarshal([]byte(src), &s)
+// 	fmt.Printf("== %+v", src)
+// 	fmt.Printf("cc== %+v", s)
+
+// }

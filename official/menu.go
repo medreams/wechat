@@ -70,7 +70,6 @@ type GetMenuInfo struct {
 
 // 查询自定义菜单
 func (sdk *SDK) QueryCustomMenu(ctx context.Context) (*GetMenuRsp, error) {
-
 	req := &GetMenuRsp{}
 	uri := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/get_current_selfmenu_info?access_token=%s", sdk.AccessToken)
 
@@ -83,7 +82,6 @@ func (sdk *SDK) QueryCustomMenu(ctx context.Context) (*GetMenuRsp, error) {
 
 // 删除自定义菜单（调用此接口会删除默认菜单及全部个性化菜单）
 func (sdk *SDK) DelCustomMenu(ctx context.Context) error {
-
 	req := &common.WxCommonResponse{}
 	uri := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/menu/delete?access_token=%s", sdk.AccessToken)
 

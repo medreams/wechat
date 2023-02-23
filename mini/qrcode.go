@@ -35,7 +35,7 @@ type ReturnMiniCodeData struct {
 }
 
 // CreateMiniSceneCode 创建小程序二维码（较多业务场景）
-func (sdk *SDK) CreateMiniSceneCode(ctx context.Context, param *WxMiniSceneParam) (req []byte, err error) {
+func (sdk *SDK) CreateMiniSceneCode(ctx context.Context, param *WxMiniSceneParam) ([]byte, error) {
 	//log.Info.Println("创建小程序二维码（较多业务场景）", param)
 
 	if param.LineColor == "" {
@@ -59,7 +59,7 @@ func (sdk *SDK) CreateMiniSceneCode(ctx context.Context, param *WxMiniSceneParam
 
 	uri := fmt.Sprintf("https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=%s", sdk.AccessToken)
 
-	bs, err := common.DoRequestPostGetByte(ctx, uri, bodyMap)
+	bs, err := common.DoRequestPostByte(ctx, uri, bodyMap)
 	if err != nil {
 		return nil, err
 	}
@@ -68,18 +68,17 @@ func (sdk *SDK) CreateMiniSceneCode(ctx context.Context, param *WxMiniSceneParam
 }
 
 // CreateMiniDefaultCode 创建小程序二维码（较少业务场景）
-func (sdk *SDK) CreateMiniDefaultCode(ctx context.Context, param *WxMiniPathParam) (req []byte, err error) {
-
+func (sdk *SDK) CreateMiniDefaultCode(ctx context.Context, param *WxMiniPathParam) ([]byte, error) {
 	bodyMap := make(common.BodyMap)
 	bodyMap.Set("path", param.Path)
 	bodyMap.Set("width", param.Width)
 
 	uri := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/wxaapp/createwxaqrcode?access_token=%s", sdk.AccessToken)
 
-	retByte, err := common.DoRequestPostGetByte(ctx, uri, bodyMap)
+	bs, err := common.DoRequestPostByte(ctx, uri, bodyMap)
 	if err != nil {
 		return nil, err
 	}
 
-	return retByte, nil
+	return bs, nil
 }

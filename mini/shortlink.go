@@ -12,17 +12,16 @@ type WxShortLink struct {
 	Link string `json:"link,omitempty"`
 }
 
-func (sdk *SDK) GetWxShortLink(ctx context.Context, pageUrl, title string, isPeermanent bool) (req *WxShortLink, err error) {
-
+func (sdk *SDK) GetWxShortLink(ctx context.Context, pageUrl, title string, isPeermanent bool) (*WxShortLink, error) {
 	bodyMap := make(common.BodyMap)
 	bodyMap.Set("page_url", pageUrl)
 	bodyMap.Set("page_title", title)
 	bodyMap.Set("is_permanent", isPeermanent)
 
-	req = &WxShortLink{}
+	req := &WxShortLink{}
 	uri := fmt.Sprintf("https://api.weixin.qq.com/wxa/genwxashortlink?access_token=%s", sdk.AccessToken)
 
-	if err = common.DoRequestPost(ctx, uri, bodyMap, req); err != nil {
+	if err := common.DoRequestPost(ctx, uri, bodyMap, req); err != nil {
 		return nil, fmt.Errorf("do request get wxShortLink: %w", err)
 	}
 

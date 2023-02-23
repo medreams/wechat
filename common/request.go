@@ -16,33 +16,41 @@ type WxCommonResponse struct {
 }
 
 func DoRequestGet(c context.Context, uri string, ptr interface{}) (err error) {
+
+	bs, err := DoRequestGetByte(c, uri)
+	if err != nil {
+		return err
+	}
+
+	if err = json.Unmarshal(bs, ptr); err != nil {
+		return fmt.Errorf("json.Unmarshal(%s, %+v)：%w", string(bs), ptr, err)
+	}
+	return
+}
+
+func DoRequestGetByte(c context.Context, uri string) (bs []byte, err error) {
 	httpClient := xhttp.NewClient()
 
 	httpClient.Header.Add(xhttp.HeaderRequestID, fmt.Sprintf("%s-%d", util.RandomString(21), time.Now().Unix()))
 	res, bs, err := httpClient.Get(uri).EndBytes(c)
 	if err != nil {
-		return fmt.Errorf("http.request(GET, %s)：%w", uri, err)
+		return nil, fmt.Errorf("http.request(GET, %s)：%w", uri, err)
 	}
 
 	if res.StatusCode != 200 {
-		return fmt.Errorf("StatusCode(%d) != 200", res.StatusCode)
+		return nil, fmt.Errorf("StatusCode(%d) != 200", res.StatusCode)
 	}
 
 	if err := CheckRequestError(bs); err != nil {
-		return err
+		return nil, err
 	}
 
-	// fmt.Println("返回结果：", string(bs))
-
-	if err = json.Unmarshal(bs, ptr); err != nil {
-		return fmt.Errorf("json.Unmarshal(%s, %+v)：%w", string(bs), ptr, err)
-	}
-	return
+	return bs, nil
 }
 
 func DoRequestPost(c context.Context, uri string, body map[string]interface{}, ptr interface{}) (err error) {
 
-	bs, err := DoRequestPostGetByte(c, uri, body)
+	bs, err := DoRequestPostByte(c, uri, body)
 	if err != nil {
 		return err
 	}
@@ -53,7 +61,7 @@ func DoRequestPost(c context.Context, uri string, body map[string]interface{}, p
 	return
 }
 
-func DoRequestPostGetByte(c context.Context, uri string, body map[string]interface{}) (bs []byte, err error) {
+func DoRequestPostByte(c context.Context, uri string, body map[string]interface{}) (bs []byte, err error) {
 	httpClient := xhttp.NewClient()
 
 	httpClient.Header.Add(xhttp.HeaderRequestID, fmt.Sprintf("%s-%d", util.RandomString(21), time.Now().Unix()))

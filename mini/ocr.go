@@ -27,7 +27,6 @@ type VehicleLicenseData struct {
 
 // 行驾证识别 https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/img-ocr/ocr/vehicleLicenseOCR.html
 func (sdk *SDK) OcrVehicleLicense(ctx context.Context, imgUrl string) (req *VehicleLicenseData, err error) {
-
 	bodyMap := make(common.BodyMap)
 	bodyMap["img_url"] = imgUrl
 
@@ -48,7 +47,6 @@ type BankCardData struct {
 
 // 银行卡识别 https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/img-ocr/ocr/bankCardOCR.html
 func (sdk *SDK) OcrBankCard(ctx context.Context, imgUrl string) (bc *BankCardData, err error) {
-
 	bodyMap := make(common.BodyMap)
 	bodyMap.Set("img_url", imgUrl)
 
@@ -78,19 +76,18 @@ type BusinessLicenseData struct {
 	RegisteredDate      string `json:"registered_date"`      //注册日期/成立日期
 }
 
-func (sdk *SDK) OcrBusinessLicense(ctx context.Context, imgUrl string) (bl *BusinessLicenseData, err error) {
-
+func (sdk *SDK) OcrBusinessLicense(ctx context.Context, imgUrl string) (*BusinessLicenseData, error) {
 	bodyMap := make(common.BodyMap)
 	bodyMap.Set("img_url", imgUrl)
 
-	bl = &BusinessLicenseData{}
+	req := &BusinessLicenseData{}
 	uri := fmt.Sprintf("https://api.weixin.qq.com/cv/ocr/bizlicense?access_token=%s", sdk.AccessToken)
 
-	if err = common.DoRequestPost(ctx, uri, bodyMap, bl); err != nil {
+	if err := common.DoRequestPost(ctx, uri, bodyMap, req); err != nil {
 		return nil, fmt.Errorf("do request get phone: %w", err)
 	}
 
-	return bl, nil
+	return req, nil
 }
 
 type DriverLicenseData struct {
@@ -108,19 +105,18 @@ type DriverLicenseData struct {
 }
 
 // 驾驶证识别 https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/img-ocr/ocr/driverLicenseOCR.html
-func (sdk *SDK) OcrDriverLicense(ctx context.Context, imgUrl string) (dl *DriverLicenseData, err error) {
-
+func (sdk *SDK) OcrDriverLicense(ctx context.Context, imgUrl string) (*DriverLicenseData, error) {
 	bodyMap := make(common.BodyMap)
 	bodyMap.Set("img_url", imgUrl)
 
-	dl = &DriverLicenseData{}
+	req := &DriverLicenseData{}
 	uri := fmt.Sprintf("https://api.weixin.qq.com/cv/ocr/bizlicense?access_token=%s", sdk.AccessToken)
 
-	if err = common.DoRequestPost(ctx, uri, bodyMap, dl); err != nil {
+	if err := common.DoRequestPost(ctx, uri, bodyMap, req); err != nil {
 		return nil, fmt.Errorf("do request get phone: %w", err)
 	}
 
-	return dl, nil
+	return req, nil
 }
 
 type IdCardData struct {
@@ -135,17 +131,16 @@ type IdCardData struct {
 }
 
 // 身份证识别 https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/img-ocr/ocr/idCardOCR.html
-func (sdk *SDK) OcrIdCard(ctx context.Context, imgUrl string) (id *IdCardData, err error) {
-
+func (sdk *SDK) OcrIdCard(ctx context.Context, imgUrl string) (*IdCardData, error) {
 	bodyMap := make(common.BodyMap)
 	bodyMap.Set("img_url", imgUrl)
 
-	id = &IdCardData{}
+	req := &IdCardData{}
 	uri := fmt.Sprintf("https://api.weixin.qq.com/cv/ocr/idcard?type=photo&access_token=%s", sdk.AccessToken)
 
-	if err = common.DoRequestPost(ctx, uri, bodyMap, id); err != nil {
+	if err := common.DoRequestPost(ctx, uri, bodyMap, req); err != nil {
 		return nil, fmt.Errorf("do request get phone: %w", err)
 	}
 
-	return id, nil
+	return req, nil
 }

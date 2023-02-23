@@ -36,8 +36,7 @@ type WxMiniUrlLinkQuery struct {
 	UrlLinkQuota WxMiniQuota       `json:"url_link_quota,omitempty"`
 }
 
-func (sdk *SDK) GenerateUrlLink(ctx context.Context, path, query, envVersion string, expire *WxMiniExpireParam, cb *WxMiniCloudBase) (scheme *WxMiniLink, err error) {
-
+func (sdk *SDK) GenerateUrlLink(ctx context.Context, path, query, envVersion string, expire *WxMiniExpireParam, cb *WxMiniCloudBase) (*WxMiniLink, error) {
 	bodyMap := make(common.BodyMap)
 	bodyMap.Set("path", path)
 	bodyMap.Set("query", query)
@@ -73,12 +72,11 @@ func (sdk *SDK) GenerateUrlLink(ctx context.Context, path, query, envVersion str
 	return req, nil
 
 }
-func (sdk *SDK) QueryUrlLink(ctx context.Context, urlLink string) (req *WxMiniUrlLinkQuery, err error) {
-
+func (sdk *SDK) QueryUrlLink(ctx context.Context, urlLink string) (*WxMiniUrlLinkQuery, error) {
 	bodyMap := make(common.BodyMap)
 	bodyMap.Set("url_link", urlLink)
 
-	req = &WxMiniUrlLinkQuery{}
+	req := &WxMiniUrlLinkQuery{}
 	uri := fmt.Sprintf("https://api.weixin.qq.com/wxa/query_urllink?access_token=%s", sdk.AccessToken)
 
 	if err := common.DoRequestPost(ctx, uri, bodyMap, req); err != nil {

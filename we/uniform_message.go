@@ -27,7 +27,6 @@ type WxSendUniformTemplateMessageParam struct {
 
 // SendUniformTemplateMessage 下发统一消息
 func (sdk *SDK) SendUniformTemplateMessage(ctx context.Context, param *WxSendUniformTemplateMessageParam) error {
-
 	if param.Touser == "" {
 		return fmt.Errorf("touser is empty")
 	}

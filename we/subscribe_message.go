@@ -33,12 +33,16 @@ type WxSubscribeMessageParam struct {
 }
 
 // GetSubscribeTemplateList 获取私有订阅模版
-func (sdk *SDK) GetSubscribeTemplateList(ctx context.Context, appid string) (req *WxGetTemplateRes, err error) {
-	req = &WxGetTemplateRes{}
-
+func (sdk *SDK) GetSubscribeTemplateList(ctx context.Context, appid string) (*WxGetTemplateRes, error) {
+	req := &WxGetTemplateRes{}
 	uri := fmt.Sprintf("https://api.weixin.qq.com/wxaapi/newtmpl/gettemplate?access_token=%s", sdk.AccessToken)
-	if err = common.DoRequestGet(ctx, uri, req); err != nil {
+
+	if err := common.DoRequestGet(ctx, uri, req); err != nil {
 		return nil, fmt.Errorf("do request: %w", err)
+	}
+
+	if req.ErrCode != 0 {
+		return nil, fmt.Errorf("ErrCode(%d) != 0", req.ErrCode)
 	}
 
 	return req, nil
@@ -46,7 +50,6 @@ func (sdk *SDK) GetSubscribeTemplateList(ctx context.Context, appid string) (req
 
 // SendSubscribeMessage 发送模版信息
 func (sdk *SDK) SendSubscribeMessage(ctx context.Context, param *WxSubscribeMessageParam) error {
-
 	if param.TemplateID == "" {
 		return fmt.Errorf("template_id is empty")
 	}
