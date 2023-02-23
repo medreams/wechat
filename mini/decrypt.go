@@ -30,6 +30,9 @@ func (sdk *SDK) DecryptUserInfo(session_key, iv, encrypted_data string) (*WxUser
 
 	var result WxUserInfo
 	err = json.Unmarshal(dataBytes, &result)
+	if err != nil {
+		return nil, err
+	}
 
 	watermark := result.Watermark
 	if watermark.Appid != sdk.Appid {
@@ -48,6 +51,9 @@ func (sdk *SDK) DecryptUserPhone(session_key, iv, encrypted_data string) (*WxUse
 
 	var result WxUserPhone
 	err = json.Unmarshal(dataBytes, &result)
+	if err != nil {
+		return nil, err
+	}
 
 	watermark := result.Watermark
 	if watermark.Appid != sdk.Appid {
