@@ -27,7 +27,7 @@ func GetAccessToken(ctx context.Context, appid, appSecret string) (at *WxAccessT
 		return nil, fmt.Errorf("get access_token error: %d, %s", at.ErrCode, at.ErrMsg)
 	}
 
-	at.ExpiresTime = time.Now().Unix() + int64(at.ExpiresIn)
+	at.ExpiresTime = time.Now().Unix() + int64(at.ExpiresIn-200)
 
 	return at, nil
 }
