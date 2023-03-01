@@ -8,7 +8,7 @@ import (
 	"github.com/medreams/wechat/common"
 )
 
-// 获取公众号的黑名单列表
+// 获取公众号的黑名单列表 https://developers.weixin.qq.com/doc/offiaccount/User_Management/Manage_blacklist.html
 func (sdk *SDK) GetUserBlackList(ctx context.Context, beginOpenid string) (list *UserOpenidList, err error) {
 	bodyMap := make(common.BodyMap)
 	bodyMap["begin_openid"] = beginOpenid

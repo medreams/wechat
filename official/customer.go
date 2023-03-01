@@ -9,55 +9,6 @@ import (
 )
 
 // 客服管理  https://developers.weixin.qq.com/doc/offiaccount/Customer_Service/Customer_Service_Manage
-
-func toError(code int64, msg string) error {
-
-	switch code {
-	case 0:
-		return fmt.Errorf("成功")
-	case 65400:
-		return fmt.Errorf("65400 API不可用，即没有开通/升级到新版客服功能")
-	case 65401:
-		return fmt.Errorf("65401 无效客服帐号")
-	case 65403:
-		return fmt.Errorf("65403 客服昵称不合法")
-	case 65404:
-		return fmt.Errorf("65404 客服帐号不合法")
-	case 65405:
-		return fmt.Errorf("65405 帐号数目已达到上限，不能继续添加")
-	case 65406:
-		return fmt.Errorf("65406 已经存在的客服帐号")
-	case 65407:
-		return fmt.Errorf("65407 邀请对象已经是该公众号客服")
-	case 65408:
-		return fmt.Errorf("65408 本公众号已经有一个邀请给该微信")
-	case 65409:
-		return fmt.Errorf("65409 无效的微信号")
-	case 65410:
-		return fmt.Errorf("65410 邀请对象绑定公众号客服数达到上限（目前每个微信号可以绑定5个公众号客服帐号）")
-	case 65411:
-		return fmt.Errorf("65411 该帐号已经有一个等待确认的邀请，不能重复邀请")
-	case 65412:
-		return fmt.Errorf("65412 该帐号已经绑定微信号，不能进行邀请")
-	case 65413:
-		return fmt.Errorf("65413 不存在对应用户的会话信息")
-	case 65414:
-		return fmt.Errorf("65414 粉丝正在被其他客服接待")
-	case 65415:
-		return fmt.Errorf("65415 指定的客服不在线")
-	case 65416:
-		return fmt.Errorf("65416 查询参数不合法")
-	case 65417:
-		return fmt.Errorf("65417 查询时间段超出限制")
-	case 40005:
-		return fmt.Errorf("40005 不支持的媒体类型")
-	case 40009:
-		return fmt.Errorf("40009 媒体文件长度不合法")
-	default:
-		return fmt.Errorf("%d %s", code, msg)
-	}
-}
-
 type CustomerInfo struct {
 	KfAccount        string `json:"kf_account"`         //完整客服帐号，格式为：帐号前缀@公众号微信号
 	KfHeadimgurl     string `json:"kf_headimgurl"`      //客服头像
@@ -86,7 +37,7 @@ func (sdk *SDK) GetCustomerList(ctx context.Context) (*CustomerList, error) {
 	}
 
 	if req.ErrCode != 0 {
-		return nil, toError(req.ErrCode, req.ErrMsg)
+		return nil, common.ToError(req.ErrCode, req.ErrMsg)
 	}
 
 	return req, nil
@@ -114,7 +65,7 @@ func (sdk *SDK) GetOnlineCustomerList(ctx context.Context) (*CustomerOnlineList,
 	}
 
 	if req.ErrCode != 0 {
-		return nil, toError(req.ErrCode, req.ErrMsg)
+		return nil, common.ToError(req.ErrCode, req.ErrMsg)
 	}
 
 	return req, nil
@@ -134,7 +85,7 @@ func (sdk *SDK) CreateCustomer(ctx context.Context, account, nickname string) er
 	}
 
 	if req.ErrCode != 0 {
-		return toError(req.ErrCode, req.ErrMsg)
+		return common.ToError(req.ErrCode, req.ErrMsg)
 	}
 	return nil
 }
@@ -153,7 +104,7 @@ func (sdk *SDK) InviteCustomer(ctx context.Context, account, inviteWx string) er
 	}
 
 	if req.ErrCode != 0 {
-		return toError(req.ErrCode, req.ErrMsg)
+		return common.ToError(req.ErrCode, req.ErrMsg)
 	}
 	return nil
 }
@@ -172,7 +123,7 @@ func (sdk *SDK) UpdateCustomerNickname(ctx context.Context, account, nickname st
 	}
 
 	if req.ErrCode != 0 {
-		return toError(req.ErrCode, req.ErrMsg)
+		return common.ToError(req.ErrCode, req.ErrMsg)
 	}
 	return nil
 }
@@ -190,7 +141,7 @@ func (sdk *SDK) UploadCustomerHeadimg(ctx context.Context, account string, headi
 	}
 
 	if req.ErrCode != 0 {
-		return toError(req.ErrCode, req.ErrMsg)
+		return common.ToError(req.ErrCode, req.ErrMsg)
 	}
 	return nil
 }
@@ -205,7 +156,7 @@ func (sdk *SDK) DeleteCustomer(ctx context.Context, account string) error {
 	}
 
 	if req.ErrCode != 0 {
-		return toError(req.ErrCode, req.ErrMsg)
+		return common.ToError(req.ErrCode, req.ErrMsg)
 	}
 	return nil
 }
@@ -224,7 +175,7 @@ func (sdk *SDK) CreateCustomerSession(ctx context.Context, account, openid strin
 	}
 
 	if req.ErrCode != 0 {
-		return toError(req.ErrCode, req.ErrMsg)
+		return common.ToError(req.ErrCode, req.ErrMsg)
 	}
 	return nil
 }
@@ -243,7 +194,7 @@ func (sdk *SDK) CloseCustomerSession(ctx context.Context, account, openid string
 	}
 
 	if req.ErrCode != 0 {
-		return toError(req.ErrCode, req.ErrMsg)
+		return common.ToError(req.ErrCode, req.ErrMsg)
 	}
 	return nil
 }
@@ -265,7 +216,7 @@ func (sdk *SDK) GetCustomerSession(ctx context.Context, openid string) (*Custome
 	}
 
 	if req.ErrCode != 0 {
-		return nil, toError(req.ErrCode, req.ErrMsg)
+		return nil, common.ToError(req.ErrCode, req.ErrMsg)
 	}
 	return req, nil
 }
@@ -291,7 +242,7 @@ func (sdk *SDK) GetCustomerSessionList(ctx context.Context, account string) (*Cu
 	}
 
 	if req.ErrCode != 0 {
-		return nil, toError(req.ErrCode, req.ErrMsg)
+		return nil, common.ToError(req.ErrCode, req.ErrMsg)
 	}
 	return req, nil
 }
@@ -318,7 +269,7 @@ func (sdk *SDK) GetCustomerWaitSessionList(ctx context.Context, account string) 
 	}
 
 	if req.ErrCode != 0 {
-		return nil, toError(req.ErrCode, req.ErrMsg)
+		return nil, common.ToError(req.ErrCode, req.ErrMsg)
 	}
 	return req, nil
 }
@@ -353,7 +304,7 @@ func (sdk *SDK) GetCustomerMsg(ctx context.Context, starttime, endtime, msgid, n
 	}
 
 	if req.ErrCode != 0 {
-		return toError(req.ErrCode, req.ErrMsg)
+		return common.ToError(req.ErrCode, req.ErrMsg)
 	}
 	return nil
 }

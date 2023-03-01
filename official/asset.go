@@ -178,7 +178,8 @@ func (sdk *SDK) DelPermanentAssets(ctx context.Context, mediaId string) error {
 	return nil
 }
 
-type GetPermanentAssetsCountRsp struct {
+type GetPermanentAssetsTotalRsp struct {
+	common.WxCommonResponse
 	VoiceCount int `json:"voice_count"` //语音总数量
 	VideoCount int `json:"video_count"` //视频总数量
 	ImageCount int `json:"image_count"` //图片总数量
@@ -186,20 +187,20 @@ type GetPermanentAssetsCountRsp struct {
 }
 
 // 获取素材总数 https://developers.weixin.qq.com/doc/offiaccount/Asset_Management/Get_the_total_of_all_materials.html
-func (sdk *SDK) GetPermanentAssetsCount(ctx context.Context) error {
+func (sdk *SDK) GetPermanentAssetsTotal(ctx context.Context) (*GetPermanentAssetsTotalRsp, error) {
 
-	req := &common.WxCommonResponse{}
+	req := &GetPermanentAssetsTotalRsp{}
 	uri := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/material/get_materialcount?access_token=%s", sdk.AccessToken)
 
 	if err := common.DoRequestGet(ctx, uri, req); err != nil {
-		return fmt.Errorf("do request: %w", err)
+		return req, fmt.Errorf("do request: %w", err)
 	}
 
 	if req.ErrCode != 0 {
-		return fmt.Errorf("ErrCode(%d) != 0", req.ErrCode)
+		return req, fmt.Errorf("ErrCode(%d) != 0", req.ErrCode)
 	}
 
-	return nil
+	return req, nil
 }
 
 type PermanentAssetsListRsp struct {

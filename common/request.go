@@ -25,6 +25,7 @@ func DoRequestGet(c context.Context, uri string, ptr interface{}) (err error) {
 	if err = json.Unmarshal(bs, ptr); err != nil {
 		return fmt.Errorf("json.Unmarshal(%s, %+v)：%w", string(bs), ptr, err)
 	}
+
 	return
 }
 
