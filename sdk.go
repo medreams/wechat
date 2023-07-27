@@ -30,21 +30,23 @@ func NewWeChatSDK(ctx context.Context, appId, appSecret string, isAccessToken ..
 
 	//如果需要自动获取access_token，则自动获取
 	if len(isAccessToken) > 0 && isAccessToken[0] {
+		var acc *common.WxAccessToken
+		var err error
+
 		accessTokenCacheKey := fmt.Sprintf("%s_access_token", appId)
 		cacheWithoutClean := cache.NewCache(0)
 		value, found := cacheWithoutClean.Get(accessTokenCacheKey)
 
-		var acc *common.WxAccessToken
 		if found {
 			json.Unmarshal([]byte(value), acc)
 		} else {
-			acc, err := common.GetAccessToken(sdk.ctx, sdk.AppId, sdk.AppSecret)
+			acc, err = common.GetAccessToken(sdk.ctx, sdk.AppId, sdk.AppSecret)
 			if err != nil {
 				fmt.Println(err)
 			}
 
 			by, err := json.Marshal(acc)
-			if err != nil {
+			if err == nil {
 				cacheWithoutClean.Set(accessTokenCacheKey, string(by), 700)
 			}
 		}
