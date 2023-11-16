@@ -23,7 +23,7 @@ type WeChatSDK struct {
 func NewWeChatSDK(ctx context.Context, appId, appSecret string, isAccessToken ...bool) *WeChatSDK {
 
 	sdk := &WeChatSDK{
-		ctx:       context.Background(),
+		ctx:       ctx,
 		AppId:     appId,
 		AppSecret: appSecret,
 	}
