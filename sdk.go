@@ -18,6 +18,7 @@ type WeChatSDK struct {
 	AppId     string
 	AppSecret string
 	tokenInfo common.WxAccessToken
+	store     *cache.Cache
 }
 
 func NewWeChatSDK(ctx context.Context, appId, appSecret string, isAccessToken ...bool) *WeChatSDK {
@@ -35,19 +36,20 @@ func NewWeChatSDK(ctx context.Context, appId, appSecret string, isAccessToken ..
 
 		accessTokenCacheKey := fmt.Sprintf("%s_access_token", appId)
 		cacheWithoutClean := cache.NewCache(0)
+		sdk.store = cacheWithoutClean
 		value, found := cacheWithoutClean.Get(accessTokenCacheKey)
 
 		if found {
 			json.Unmarshal([]byte(value), acc)
 		} else {
-			acc, err = common.GetAccessToken(sdk.ctx, sdk.AppId, sdk.AppSecret)
+			acc, err = common.GetStableToken(sdk.ctx, sdk.AppId, sdk.AppSecret)
 			if err != nil {
 				fmt.Println(err)
 			}
 
 			by, err := json.Marshal(acc)
 			if err == nil {
-				cacheWithoutClean.Set(accessTokenCacheKey, string(by), 700)
+				cacheWithoutClean.Set(accessTokenCacheKey, string(by), acc.ExpiresIn)
 			}
 		}
 
@@ -86,4 +88,9 @@ func (sdk *WeChatSDK) SetAccessToken(token common.WxAccessToken) (err error) {
 
 func (sdk *WeChatSDK) GetAccessToken() (access_token string) {
 	return sdk.tokenInfo.AccessToken
+}
+
+func (sdk *WeChatSDK) CleanAccessToken() {
+	accessTokenCacheKey := fmt.Sprintf("%s_access_token", sdk.AppId)
+	sdk.store.Del(accessTokenCacheKey)
 }

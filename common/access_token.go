@@ -31,3 +31,27 @@ func GetAccessToken(ctx context.Context, appid, appSecret string) (at *WxAccessT
 
 	return at, nil
 }
+
+func GetStableToken(ctx context.Context, appid, appSecret string) (at *WxAccessToken, err error) {
+
+	at = &WxAccessToken{}
+	URL := "https://api.weixin.qq.com/cgi-bin/stable_token"
+
+	bodyMap := make(BodyMap)
+	bodyMap.Set("grant_type", "client_credential")
+	bodyMap.Set("appid", appid)
+	bodyMap.Set("secret", appSecret)
+	bodyMap.Set("force_refresh", false)
+
+	if err = DoRequestPost(ctx, URL, bodyMap, at); err != nil {
+		return nil, fmt.Errorf("do request get access_token: %w", err)
+	}
+
+	if at.ErrCode != 0 {
+		return nil, fmt.Errorf("get access_token error: %d, %s", at.ErrCode, at.ErrMsg)
+	}
+
+	at.ExpiresTime = time.Now().Unix() + int64(at.ExpiresIn)
+
+	return at, nil
+}

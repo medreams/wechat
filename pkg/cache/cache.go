@@ -67,6 +67,14 @@ func (c *Cache) Get(key string) (string, bool) {
 	return entry.value, true
 }
 
+// Del 从缓存中删除指定的键
+func (c *Cache) Del(key string) {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+
+	delete(c.data, key)
+}
+
 // startCleanup 启动定期清理过期缓存的goroutine
 func (c *Cache) startCleanup(interval time.Duration) {
 	if c.cleanupTicker == nil {
