@@ -30,3 +30,27 @@ func (sdk *SDK) Code2Session(c context.Context, code string) (req *WxCode2Sessio
 	return req, nil
 
 }
+
+// 新版本的code获取手机号码，收费接口，需要开通
+// <button open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber"></button>
+func (sdk *SDK) Code2Phone(c context.Context, code string) (phone *WxUserPhone, err error) {
+	req := &struct {
+		common.WxCommonResponse
+		Phone WxUserPhone `json:"phone_info,omitempty"`
+	}{}
+
+	bodyMap := make(common.BodyMap)
+	bodyMap.Set("code", code)
+
+	uri := fmt.Sprintf("https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=%s", sdk.AccessToken)
+
+	if err = common.DoRequestPost(c, uri, bodyMap, req); err != nil {
+		return nil, fmt.Errorf("do request get phone: %w", err)
+	}
+
+	if req.ErrCode != 0 {
+		return nil, fmt.Errorf("get phone error: %d, %s", req.ErrCode, req.ErrMsg)
+	}
+
+	return &req.Phone, nil
+}
